@@ -1514,6 +1514,8 @@ function loop() {
 requestAnimationFrame(loop);
 animT += 0.016;
 clearBtns();
+ctx.setTransform(1, 0, 0, 1, 0, 0);
+ctx.globalAlpha = 1;
 ctx.clearRect(0, 0, W, H);
 try {
 if (state === 'menu') {
@@ -1526,6 +1528,8 @@ drawQuiz();
 drawFinalScreen();
 }
 } catch(e) {
+ctx.setTransform(1, 0, 0, 1, 0, 0);
+ctx.globalAlpha = 1;
 ctx.fillStyle = '#111';
 ctx.fillRect(0, 0, W, H);
 ctx.fillStyle = '#f44';
