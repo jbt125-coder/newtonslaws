@@ -398,7 +398,7 @@ var QUIZ_BANK = [
 // – SHUFFLE –
 function shuffle(arr) {
 var a = arr.slice();
-for (var i = a.length - 1; i > 0; i–) {
+for (var i = a.length - 1; i > 0; i--) {
 var j = Math.floor(Math.random() * (i + 1));
 var t = a[i]; a[i] = a[j]; a[j] = t;
 }
@@ -1244,7 +1244,6 @@ var userA = quizAnswers[i];
 var correct = userA === q.correct;
 if (correct) continue; // only wrong ones
 
-```
 var blockH = 110;
 var by = scrollY;
 scrollY += blockH + 10;
@@ -1257,7 +1256,6 @@ drawText(q.q, W/2, by + 20, 11, '#fdd', 'center', W * 0.84);
 var yourText = userA >= 0 ? q.choices[userA] : 'Not answered';
 drawText('Your answer: ' + yourText, W/2, by + 56, 11, '#f86', 'center', W * 0.84);
 drawText('Correct: ' + q.choices[q.correct], W/2, by + 82, 11, '#4f8', 'center', W * 0.84);
-```
 
 }
 
@@ -1279,10 +1277,8 @@ drawText(‘Enter Your Name’, W/2, H * 0.30, 20, ‘#4af’);
 drawText(‘Type in the field below’, W/2, H * 0.30 + 36, 13, ‘#7af’);
 nameInput.style.visibility = ‘visible’; nameInput.style.pointerEvents = ‘auto’;
 
-```
-drawText('Then tap CONTINUE', W/2, H * 0.60, 14, '#7af');
-drawBtn('name_continue', W/2, H * 0.72, 180, 48, 'CONTINUE', 16, true);
-```
+drawText(‘Then tap CONTINUE’, W/2, H * 0.60, 14, ‘#7af’);
+drawBtn(‘name_continue’, W/2, H * 0.72, 180, 48, ‘CONTINUE’, 16, true);
 
 } else if (submitStep === 2) {
 // Period select
@@ -1430,7 +1426,7 @@ return;
 
 if (state === ‘lesson’) {
 if (id === ‘back’) {
-if (lessonStep > 0) { lessonStep–; animT = 0; }
+if (lessonStep > 0) { lessonStep--; animT = 0; }
 return;
 }
 if (id === ‘next’) {
@@ -1467,7 +1463,6 @@ if (id === ‘review’) { reviewMode = true; reviewScroll = 0; return; }
 if (id === ‘retry’) { buildQuiz(); quizPage = 0; return; }
 if (id === ‘submit’) { submitStep = 1; return; }
 
-```
 if (submitStep === 1) {
   if (id === 'name_continue') {
     var n = nameInput.value.trim();
@@ -1510,7 +1505,6 @@ if (id === 'qcheck') {
   return;
 }
 return;
-```
 
 }
 }
