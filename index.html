@@ -28,8 +28,8 @@
 <script>
 window.onload = function() {
 
-var canvas = document.getElementById(‘c’);
-var ctx = canvas.getContext(‘2d’);
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
 
 // Polyfill ctx.ellipse for older WebKit/WKWebView
 if (!ctx.ellipse) {
@@ -49,19 +49,19 @@ ctx.setLineDash = function() {};
 }
 var W, H;
 var stars = [];
-var state = ‘menu’; // menu, lesson, quiz, result
+var state = 'menu'; // menu, lesson, quiz, result
 var currentLesson = null;
 var lessonStep = 0;
 var animT = 0;
 var touches = [];
-var nameInput = document.getElementById(‘textInput’);
+var nameInput = document.getElementById('textInput');
 
 // Quiz state
 var quizQuestions = [];
 var quizAnswers = [];
 var quizChecked = false;
 var quizScore = 0;
-var studentName = ‘’;
+var studentName = '';
 var studentPeriod = 0;
 var submitStep = 0; // 0=name, 1=period, 2=done
 var selectedPeriod = 0;
@@ -74,12 +74,12 @@ canvas.width = W;
 canvas.height = H;
 }
 resize();
-window.addEventListener(‘resize’, resize);
+window.addEventListener('resize', resize);
 
 // Boot test - if you see a blue dot the loop is starting
-ctx.fillStyle = ‘#001133’;
+ctx.fillStyle = '#001133';
 ctx.fillRect(0, 0, W, H);
-ctx.fillStyle = ‘#4af’;
+ctx.fillStyle = '#4af';
 ctx.beginPath();
 ctx.arc(W/2, H/2, 30, 0, Math.PI * 2);
 ctx.fill();
@@ -105,7 +105,7 @@ for (var i = 0; i < stars.length; i++) {
 var s = stars[i];
 var twinkle = s.b + Math.sin(animT * s.sp * 60 + i) * 0.2;
 ctx.globalAlpha = Math.min(1, twinkle) * alpha;
-ctx.fillStyle = ‘#fff’;
+ctx.fillStyle = '#fff';
 ctx.beginPath();
 ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
 ctx.fill();
@@ -116,11 +116,11 @@ ctx.globalAlpha = 1;
 function drawBg() {
 try {
 var grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
-grad.addColorStop(0, ‘#05101f’);
-grad.addColorStop(1, ‘#000408’);
+grad.addColorStop(0, '#05101f');
+grad.addColorStop(1, '#000408');
 ctx.fillStyle = grad;
 } catch(e) {
-ctx.fillStyle = ‘#030a14’;
+ctx.fillStyle = '#030a14';
 }
 ctx.fillRect(0, 0, W, H);
 drawStars();
@@ -129,17 +129,17 @@ drawStars();
 // – UTILITY DRAW –
 function drawText(txt, x, y, size, color, align, maxW) {
 ctx.save();
-ctx.fillStyle = color || ‘#fff’;
-ctx.font = ‘bold ’ + size + ‘px “Courier New”, monospace’;
-ctx.textAlign = align || ‘center’;
-ctx.textBaseline = ‘middle’;
+ctx.fillStyle = color || '#fff';
+ctx.font = 'bold ' + size + 'px "Courier New", monospace';
+ctx.textAlign = align || 'center';
+ctx.textBaseline = 'middle';
 if (maxW) {
 // word wrap
-var words = txt.split(’ ’);
+var words = txt.split(' ');
 var lines = [];
-var line = ‘’;
+var line = '';
 for (var i = 0; i < words.length; i++) {
-var test = line + (line ? ’ ’ : ‘’) + words[i];
+var test = line + (line ? ' ' : '') + words[i];
 if (ctx.measureText(test).width > maxW && line) {
 lines.push(line);
 line = words[i];
@@ -205,11 +205,11 @@ buttons.push({ id: id, x: x, y: y, w: w, h: h });
 function clearBtns() { buttons = []; }
 
 function drawBtn(id, x, y, w, h, label, sz, highlight) {
-var col = highlight ? ‘rgba(30,120,200,0.9)’ : ‘rgba(10,40,80,0.85)’;
-var border = highlight ? ‘#6cf’ : ‘#38a’;
+var col = highlight ? 'rgba(30,120,200,0.9)' : 'rgba(10,40,80,0.85)';
+var border = highlight ? '#6cf' : '#38a';
 drawRect(x - w/2, y - h/2, w, h, col, 12);
 drawRectStroke(x - w/2, y - h/2, w, h, border, 12, 1.5);
-drawText(label, x, y, sz || 16, ‘#dff’, ‘center’);
+drawText(label, x, y, sz || 16, '#dff', 'center');
 regBtn(id, x - w/2, y - h/2, w, h);
 }
 
@@ -220,152 +220,152 @@ return tx >= btn.x && tx <= btn.x + btn.w && ty >= btn.y && ty <= btn.y + btn.h;
 // – LESSONS DATA –
 var LESSONS = [
 {
-id: ‘gravity’,
-title: ‘Universal Gravitation’,
+id: 'gravity',
+title: 'Universal Gravitation',
 steps: [
 {
-type: ‘equation’,
-heading: ‘Law of Universal Gravitation’,
-equation: ‘F = G(m1 x m2) / r^2’,
-body: ‘Every mass attracts every other mass. The force depends on the product of their masses and weakens with the square of the distance between them.\n\nG = 6.674 x 10^-11 N m^2/kg^2’
+type: 'equation',
+heading: 'Law of Universal Gravitation',
+equation: 'F = G(m1 x m2) / r^2',
+body: 'Every mass attracts every other mass. The force depends on the product of their masses and weakens with the square of the distance between them.\n\nG = 6.674 x 10^-11 N m^2/kg^2'
 },
 {
-type: ‘anim’,
-heading: ‘Spring Tides’,
-body: ‘When the Sun, Earth, and Moon align, their gravitational pulls combine – creating larger tidal bulges called SPRING TIDES.’,
-animKey: ‘spring’
+type: 'anim',
+heading: 'Spring Tides',
+body: 'When the Sun, Earth, and Moon align, their gravitational pulls combine – creating larger tidal bulges called SPRING TIDES.',
+animKey: 'spring'
 },
 {
-type: ‘anim’,
-heading: ‘Neap Tides’,
-body: ‘When the Moon is at 90 degrees to the Sun-Earth line, their pulls partially cancel – creating smaller NEAP TIDES.’,
-animKey: ‘neap’
+type: 'anim',
+heading: 'Neap Tides',
+body: 'When the Moon is at 90 degrees to the Sun-Earth line, their pulls partially cancel – creating smaller NEAP TIDES.',
+animKey: 'neap'
 }
 ]
 },
 {
-id: ‘n1’,
-title: “Newton’s 1st Law”,
+id: 'n1',
+title: "Newton's 1st Law",
 steps: [
 {
-type: ‘equation’,
-heading: “Newton’s First Law”,
-equation: ‘An object at rest\nstays at rest.\nAn object in motion\nstays in motion.’,
-body: ‘Unless acted upon by an unbalanced force. This is also called the Law of INERTIA – objects resist changes to their state of motion.’
+type: 'equation',
+heading: "Newton's First Law",
+equation: 'An object at rest\nstays at rest.\nAn object in motion\nstays in motion.',
+body: 'Unless acted upon by an unbalanced force. This is also called the Law of INERTIA – objects resist changes to their state of motion.'
 },
 {
-type: ‘anim’,
-heading: ‘Inertia in Space’,
-body: ‘A spacecraft with engines off travels in a straight line forever – no friction, no force, no change.’,
-animKey: ‘n1_space’
+type: 'anim',
+heading: 'Inertia in Space',
+body: 'A spacecraft with engines off travels in a straight line forever – no friction, no force, no change.',
+animKey: 'n1_space'
 },
 {
-type: ‘anim’,
-heading: ‘Inertia on Earth’,
-body: ‘A skateboarder hits a curb and stops – but their body keeps moving forward. Inertia at work!’,
-animKey: ‘n1_skate’
+type: 'anim',
+heading: 'Inertia on Earth',
+body: 'A skateboarder hits a curb and stops – but their body keeps moving forward. Inertia at work!',
+animKey: 'n1_skate'
 }
 ]
 },
 {
-id: ‘n2’,
-title: “Newton’s 2nd Law”,
+id: 'n2',
+title: "Newton's 2nd Law",
 steps: [
 {
-type: ‘equation’,
-heading: “Newton’s Second Law”,
-equation: ‘F = m x a’,
-body: ‘Force equals mass times acceleration. A larger force produces more acceleration. A larger mass requires more force to achieve the same acceleration.’
+type: 'equation',
+heading: "Newton's Second Law",
+equation: 'F = m x a',
+body: 'Force equals mass times acceleration. A larger force produces more acceleration. A larger mass requires more force to achieve the same acceleration.'
 },
 {
-type: ‘anim’,
-heading: ‘Rocket Launch’,
-body: ‘A rocket produces thrust (force). The heavier the rocket, the slower it accelerates. More thrust = more acceleration.’,
-animKey: ‘n2_rocket’
+type: 'anim',
+heading: 'Rocket Launch',
+body: 'A rocket produces thrust (force). The heavier the rocket, the slower it accelerates. More thrust = more acceleration.',
+animKey: 'n2_rocket'
 },
 {
-type: ‘anim’,
-heading: ‘Bowling Ball vs Tennis Ball’,
-body: ‘Same force, very different results. The lighter tennis ball accelerates much faster than the bowling ball – F=ma in action.’,
-animKey: ‘n2_balls’
+type: 'anim',
+heading: 'Bowling Ball vs Tennis Ball',
+body: 'Same force, very different results. The lighter tennis ball accelerates much faster than the bowling ball – F=ma in action.',
+animKey: 'n2_balls'
 }
 ]
 },
 {
-id: ‘n3’,
-title: “Newton’s 3rd Law”,
+id: 'n3',
+title: "Newton's 3rd Law",
 steps: [
 {
-type: ‘equation’,
-heading: “Newton’s Third Law”,
-equation: ‘For every action\nthere is an equal\nand opposite\nreaction.’,
-body: ‘Forces always come in pairs. When object A pushes on object B, object B pushes back on A with equal force in the opposite direction.’
+type: 'equation',
+heading: "Newton's Third Law",
+equation: 'For every action\nthere is an equal\nand opposite\nreaction.',
+body: 'Forces always come in pairs. When object A pushes on object B, object B pushes back on A with equal force in the opposite direction.'
 },
 {
-type: ‘anim’,
-heading: ‘Rocket Exhaust’,
-body: ‘Hot gas is pushed DOWN out of the rocket. The rocket is pushed UP with equal force. Action and reaction.’,
-animKey: ‘n3_rocket’
+type: 'anim',
+heading: 'Rocket Exhaust',
+body: 'Hot gas is pushed DOWN out of the rocket. The rocket is pushed UP with equal force. Action and reaction.',
+animKey: 'n3_rocket'
 },
 {
-type: ‘anim’,
-heading: ‘Astronaut Push-Off’,
-body: ‘An astronaut pushes off a space station wall – the astronaut floats away AND the station moves slightly in the opposite direction.’,
-animKey: ‘n3_astro’
+type: 'anim',
+heading: 'Astronaut Push-Off',
+body: 'An astronaut pushes off a space station wall – the astronaut floats away AND the station moves slightly in the opposite direction.',
+animKey: 'n3_astro'
 }
 ]
 },
 {
-id: ‘k1’,
-title: “Kepler’s 1st Law”,
+id: 'k1',
+title: "Kepler's 1st Law",
 steps: [
 {
-type: ‘equation’,
-heading: “Kepler’s First Law”,
-equation: ‘Planets orbit the\nSun in ELLIPSES\nwith the Sun at\none FOCUS.’,
-body: ‘Orbits are not perfect circles. They are slightly stretched – elliptical. The Sun sits at one focus of the ellipse, not the center.’
+type: 'equation',
+heading: "Kepler's First Law",
+equation: 'Planets orbit the\nSun in ELLIPSES\nwith the Sun at\none FOCUS.',
+body: 'Orbits are not perfect circles. They are slightly stretched – elliptical. The Sun sits at one focus of the ellipse, not the center.'
 },
 {
-type: ‘anim’,
-heading: ‘Elliptical Orbit’,
-body: ‘Watch the planet trace its elliptical path. Notice how the Sun is offset from the center – sitting at one focus of the ellipse.’,
-animKey: ‘k1_orbit’
+type: 'anim',
+heading: 'Elliptical Orbit',
+body: 'Watch the planet trace its elliptical path. Notice how the Sun is offset from the center – sitting at one focus of the ellipse.',
+animKey: 'k1_orbit'
 }
 ]
 },
 {
-id: ‘k2’,
-title: “Kepler’s 2nd Law”,
+id: 'k2',
+title: "Kepler's 2nd Law",
 steps: [
 {
-type: ‘equation’,
-heading: “Kepler’s Second Law”,
-equation: ‘Equal areas are\nswept in equal\ntimes.’,
-body: ‘A planet moves faster when closer to the Sun and slower when farther away. The imaginary line connecting planet to Sun sweeps equal areas in equal time periods.’
+type: 'equation',
+heading: "Kepler's Second Law",
+equation: 'Equal areas are\nswept in equal\ntimes.',
+body: 'A planet moves faster when closer to the Sun and slower when farther away. The imaginary line connecting planet to Sun sweeps equal areas in equal time periods.'
 },
 {
-type: ‘anim’,
-heading: ‘Equal Area Sweep’,
-body: ‘The shaded triangles show equal time intervals. Near the Sun (perihelion) the planet moves fast. Far away (aphelion) it moves slow – but equal areas!’,
-animKey: ‘k2_sweep’
+type: 'anim',
+heading: 'Equal Area Sweep',
+body: 'The shaded triangles show equal time intervals. Near the Sun (perihelion) the planet moves fast. Far away (aphelion) it moves slow – but equal areas!',
+animKey: 'k2_sweep'
 }
 ]
 },
 {
-id: ‘k3’,
-title: “Kepler’s 3rd Law”,
+id: 'k3',
+title: "Kepler's 3rd Law",
 steps: [
 {
-type: ‘equation’,
-heading: “Kepler’s Third Law”,
-equation: ‘T^2 = k x a^3’,
-body: ‘The square of the orbital period (T) is proportional to the cube of the semi-major axis (a). Planets farther from the Sun take much longer to orbit.’
+type: 'equation',
+heading: "Kepler's Third Law",
+equation: 'T^2 = k x a^3',
+body: 'The square of the orbital period (T) is proportional to the cube of the semi-major axis (a). Planets farther from the Sun take much longer to orbit.'
 },
 {
-type: ‘anim’,
-heading: ‘Orbital Period Comparison’,
-body: ‘Watch inner and outer planets orbit simultaneously. The inner planet completes many orbits before the outer planet finishes one – distance determines orbital speed.’,
-animKey: ‘k3_compare’
+type: 'anim',
+heading: 'Orbital Period Comparison',
+body: 'Watch inner and outer planets orbit simultaneously. The inner planet completes many orbits before the outer planet finishes one – distance determines orbital speed.',
+animKey: 'k3_compare'
 }
 ]
 }
@@ -373,26 +373,26 @@ animKey: ‘k3_compare’
 
 // – QUIZ BANK (20 questions) –
 var QUIZ_BANK = [
-{ q: “What does G represent in F = Gm1m2/r^2?”, a: 0, choices: [“The gravitational constant”, “The gravitational force”, “The mass of an object”, “The orbital radius”] },
-{ q: “Spring tides occur when the Sun, Earth, and Moon are:”, a: 2, choices: [“At right angles to each other”, “Randomly positioned”, “All aligned in a straight line”, “In a triangular formation”] },
-{ q: “Neap tides are caused by:”, a: 1, choices: [“Sun and Moon aligned”, “Moon at 90 degrees to Sun-Earth line”, “Earth moving closer to the Sun”, “Solar flares”] },
-{ q: “Newton’s 1st Law is also called the Law of:”, a: 3, choices: [“Acceleration”, “Reaction”, “Momentum”, “Inertia”] },
-{ q: “According to Newton’s 2nd Law, if mass doubles and force stays the same, acceleration:”, a: 2, choices: [“Doubles”, “Stays the same”, “Halves”, “Quadruples”] },
-{ q: “Newton’s 3rd Law states that for every action there is:”, a: 1, choices: [“A proportional force”, “An equal and opposite reaction”, “A gravitational response”, “A net acceleration”] },
-{ q: “Kepler’s 1st Law states that planetary orbits are:”, a: 0, choices: [“Ellipses with the Sun at one focus”, “Perfect circles”, “Parabolic curves”, “Spirals toward the Sun”] },
-{ q: “According to Kepler’s 2nd Law, a planet moves FASTEST when:”, a: 3, choices: [“Farthest from the Sun”, “At the top of its orbit”, “At equal speed throughout”, “Closest to the Sun”] },
-{ q: “Kepler’s 3rd Law relates orbital period to:”, a: 2, choices: [“The planet’s mass”, “The planet’s speed”, “The semi-major axis of its orbit”, “The Sun’s temperature”] },
-{ q: “Gravitational force between two objects INCREASES when:”, a: 0, choices: [“Their masses increase or distance decreases”, “Their masses decrease”, “Distance between them increases”, “Temperature increases”] },
-{ q: “What keeps planets in orbit around the Sun?”, a: 1, choices: [“Solar wind pushing them”, “Gravity pulling them toward the Sun”, “Their own engines”, “Magnetic fields”] },
-{ q: “The value of the gravitational constant G is approximately:”, a: 3, choices: [“9.8 m/s^2”, “3 x 10^8 m/s”, “6.674 x 10^3”, “6.674 x 10^-11 N m^2/kg^2”] },
-{ q: “A rocket works because of Newton’s:”, a: 2, choices: [“1st Law”, “2nd Law”, “3rd Law”, “Law of Gravitation”] },
-{ q: “If you double the distance between two masses, the gravitational force becomes:”, a: 0, choices: [“1/4 as strong”, “Twice as strong”, “Half as strong”, “4 times stronger”] },
-{ q: “The point in a planetary orbit CLOSEST to the Sun is called:”, a: 1, choices: [“Aphelion”, “Perihelion”, “Focus”, “Vertex”] },
-{ q: “A skateboarder’s body keeps moving forward when they suddenly stop. This demonstrates:”, a: 2, choices: [“Newton’s 3rd Law”, “Newton’s 2nd Law”, “Newton’s 1st Law (Inertia)”, “Kepler’s 2nd Law”] },
-{ q: “According to Kepler’s 2nd Law, equal AREAS are swept in equal:”, a: 3, choices: [“Distances”, “Forces”, “Speeds”, “Times”] },
-{ q: “The Sun is located at one FOCUS of a planetary ellipse. Where is the other focus?”, a: 0, choices: [“Empty space inside the ellipse”, “At the center of the ellipse”, “Behind the planet”, “At Earth’s moon”] },
-{ q: “Which planet has a longer orbital period: one closer to the Sun or one farther away?”, a: 1, choices: [“The one closer to the Sun”, “The one farther from the Sun”, “They are the same”, “It depends on the planet’s mass”] },
-{ q: “Gravitational force is described as acting between:”, a: 2, choices: [“Only large objects like planets”, “Only objects that are touching”, “Any two objects with mass”, “Only charged particles”] }
+{ q: "What does G represent in F = Gm1m2/r^2?", a: 0, choices: ["The gravitational constant", "The gravitational force", "The mass of an object", "The orbital radius"] },
+{ q: "Spring tides occur when the Sun, Earth, and Moon are:", a: 2, choices: ["At right angles to each other", "Randomly positioned", "All aligned in a straight line", "In a triangular formation"] },
+{ q: "Neap tides are caused by:", a: 1, choices: ["Sun and Moon aligned", "Moon at 90 degrees to Sun-Earth line", "Earth moving closer to the Sun", "Solar flares"] },
+{ q: "Newton's 1st Law is also called the Law of:", a: 3, choices: ["Acceleration", "Reaction", "Momentum", "Inertia"] },
+{ q: "According to Newton's 2nd Law, if mass doubles and force stays the same, acceleration:", a: 2, choices: ["Doubles", "Stays the same", "Halves", "Quadruples"] },
+{ q: "Newton's 3rd Law states that for every action there is:", a: 1, choices: ["A proportional force", "An equal and opposite reaction", "A gravitational response", "A net acceleration"] },
+{ q: "Kepler's 1st Law states that planetary orbits are:", a: 0, choices: ["Ellipses with the Sun at one focus", "Perfect circles", "Parabolic curves", "Spirals toward the Sun"] },
+{ q: "According to Kepler's 2nd Law, a planet moves FASTEST when:", a: 3, choices: ["Farthest from the Sun", "At the top of its orbit", "At equal speed throughout", "Closest to the Sun"] },
+{ q: "Kepler's 3rd Law relates orbital period to:", a: 2, choices: ["The planet's mass", "The planet's speed", "The semi-major axis of its orbit", "The Sun's temperature"] },
+{ q: "Gravitational force between two objects INCREASES when:", a: 0, choices: ["Their masses increase or distance decreases", "Their masses decrease", "Distance between them increases", "Temperature increases"] },
+{ q: "What keeps planets in orbit around the Sun?", a: 1, choices: ["Solar wind pushing them", "Gravity pulling them toward the Sun", "Their own engines", "Magnetic fields"] },
+{ q: "The value of the gravitational constant G is approximately:", a: 3, choices: ["9.8 m/s^2", "3 x 10^8 m/s", "6.674 x 10^3", "6.674 x 10^-11 N m^2/kg^2"] },
+{ q: "A rocket works because of Newton's:", a: 2, choices: ["1st Law", "2nd Law", "3rd Law", "Law of Gravitation"] },
+{ q: "If you double the distance between two masses, the gravitational force becomes:", a: 0, choices: ["1/4 as strong", "Twice as strong", "Half as strong", "4 times stronger"] },
+{ q: "The point in a planetary orbit CLOSEST to the Sun is called:", a: 1, choices: ["Aphelion", "Perihelion", "Focus", "Vertex"] },
+{ q: "A skateboarder's body keeps moving forward when they suddenly stop. This demonstrates:", a: 2, choices: ["Newton's 3rd Law", "Newton's 2nd Law", "Newton's 1st Law (Inertia)", "Kepler's 2nd Law"] },
+{ q: "According to Kepler's 2nd Law, equal AREAS are swept in equal:", a: 3, choices: ["Distances", "Forces", "Speeds", "Times"] },
+{ q: "The Sun is located at one FOCUS of a planetary ellipse. Where is the other focus?", a: 0, choices: ["Empty space inside the ellipse", "At the center of the ellipse", "Behind the planet", "At Earth's moon"] },
+{ q: "Which planet has a longer orbital period: one closer to the Sun or one farther away?", a: 1, choices: ["The one closer to the Sun", "The one farther from the Sun", "They are the same", "It depends on the planet's mass"] },
+{ q: "Gravitational force is described as acting between:", a: 2, choices: ["Only large objects like planets", "Only objects that are touching", "Any two objects with mass", "Only charged particles"] }
 ];
 
 // – SHUFFLE –
@@ -425,20 +425,20 @@ reviewMode = false;
 // – PLAY ALL –
 var playAllIndex = 0;
 var playAllMode = false;
-var playAllLessons = [‘gravity’,‘n1’,‘n2’,‘n3’,‘k1’,‘k2’,‘k3’];
+var playAllLessons = ['gravity','n1','n2','n3','k1','k2','k3'];
 
 // – MAIN MENU –
 var menuScroll = 0;
 var menuItems = [
-{ id: ‘gravity’, label: ‘Universal Gravitation’, color: ‘#1a6aaa’ },
-{ id: ‘n1’, label: “Newton’s 1st Law”, color: ‘#1a5a2a’ },
-{ id: ‘n2’, label: “Newton’s 2nd Law”, color: ‘#1a5a2a’ },
-{ id: ‘n3’, label: “Newton’s 3rd Law”, color: ‘#1a5a2a’ },
-{ id: ‘k1’, label: “Kepler’s 1st Law”, color: ‘#5a1a3a’ },
-{ id: ‘k2’, label: “Kepler’s 2nd Law”, color: ‘#5a1a3a’ },
-{ id: ‘k3’, label: “Kepler’s 3rd Law”, color: ‘#5a1a3a’ },
-{ id: ‘playall’, label: ‘PLAY ALL’, color: ‘#3a2a00’ },
-{ id: ‘quiz’, label: ‘TAKE THE QUIZ’, color: ‘#3a0000’ }
+{ id: 'gravity', label: 'Universal Gravitation', color: '#1a6aaa' },
+{ id: 'n1', label: "Newton's 1st Law", color: '#1a5a2a' },
+{ id: 'n2', label: "Newton's 2nd Law", color: '#1a5a2a' },
+{ id: 'n3', label: "Newton's 3rd Law", color: '#1a5a2a' },
+{ id: 'k1', label: "Kepler's 1st Law", color: '#5a1a3a' },
+{ id: 'k2', label: "Kepler's 2nd Law", color: '#5a1a3a' },
+{ id: 'k3', label: "Kepler's 3rd Law", color: '#5a1a3a' },
+{ id: 'playall', label: 'PLAY ALL', color: '#3a2a00' },
+{ id: 'quiz', label: 'TAKE THE QUIZ', color: '#3a0000' }
 ];
 
 function drawMenu() {
@@ -446,21 +446,21 @@ drawBg();
 // Title
 ctx.save();
 var grad = ctx.createLinearGradient(W/2 - 150, 0, W/2 + 150, 0);
-grad.addColorStop(0, ‘#4af’);
-grad.addColorStop(0.5, ‘#fff’);
-grad.addColorStop(1, ‘#4af’);
+grad.addColorStop(0, '#4af');
+grad.addColorStop(0.5, '#fff');
+grad.addColorStop(1, '#4af');
 ctx.fillStyle = grad;
-ctx.font = ‘bold 28px “Courier New”, monospace’;
-ctx.textAlign = ‘center’;
-ctx.textBaseline = ‘middle’;
-ctx.fillText(‘LAWS OF THE’, W/2, H * 0.1);
-ctx.font = ‘bold 36px “Courier New”, monospace’;
-ctx.fillStyle = ‘#4af’;
-ctx.fillText(‘UNIVERSE’, W/2, H * 0.1 + 44);
+ctx.font = 'bold 28px "Courier New", monospace';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText('LAWS OF THE', W/2, H * 0.1);
+ctx.font = 'bold 36px "Courier New", monospace';
+ctx.fillStyle = '#4af';
+ctx.fillText('UNIVERSE', W/2, H * 0.1 + 44);
 ctx.restore();
 
 // Subtitle
-drawText(‘Newton  |  Kepler  |  Gravity’, W/2, H * 0.1 + 82, 13, ‘#6af’);
+drawText('Newton  |  Kepler  |  Gravity', W/2, H * 0.1 + 82, 13, '#6af');
 
 // Menu items
 var startY = H * 0.26;
@@ -471,17 +471,17 @@ var bw = W * 0.82;
 for (var i = 0; i < menuItems.length; i++) {
 var item = menuItems[i];
 var y = startY + i * (bh + gap);
-var highlight = item.id === ‘playall’ || item.id === ‘quiz’;
+var highlight = item.id === 'playall' || item.id === 'quiz';
 drawRect(W/2 - bw/2, y, bw, bh, item.color, 12, 0.85);
-drawRectStroke(W/2 - bw/2, y, bw, bh, highlight ? ‘#f84’ : ‘#38a’, 12, highlight ? 2 : 1);
-drawText(item.label, W/2, y + bh/2, highlight ? 17 : 16, highlight ? ‘#fc8’ : ‘#cef’);
-regBtn(‘menu_’ + item.id, W/2 - bw/2, y, bw, bh);
+drawRectStroke(W/2 - bw/2, y, bw, bh, highlight ? '#f84' : '#38a', 12, highlight ? 2 : 1);
+drawText(item.label, W/2, y + bh/2, highlight ? 17 : 16, highlight ? '#fc8' : '#cef');
+regBtn('menu_' + item.id, W/2 - bw/2, y, bw, bh);
 }
 
 // Orbit decoration
 ctx.save();
 ctx.globalAlpha = 0.08;
-ctx.strokeStyle = ‘#4af’;
+ctx.strokeStyle = '#4af';
 ctx.lineWidth = 1;
 ctx.beginPath();
 ctx.ellipse(W/2, H * 0.08, 80, 20, 0, 0, Math.PI * 2);
@@ -504,48 +504,48 @@ drawBg();
 var topY = 52;
 
 // Header bar
-drawRect(0, 0, W, topY, ‘rgba(0,20,50,0.9)’, 0);
-drawText(lesson.title, W/2, 26, 15, ‘#4af’);
+drawRect(0, 0, W, topY, 'rgba(0,20,50,0.9)', 0);
+drawText(lesson.title, W/2, 26, 15, '#4af');
 
 // Menu btn top left
-drawBtn(‘menu’, 36, 26, 60, 34, ‘MENU’, 12);
+drawBtn('menu', 36, 26, 60, 34, 'MENU', 12);
 // Back btn
-if (lessonStep > 0) drawBtn(‘back’, 110, 26, 60, 34, ‘BACK’, 12);
+if (lessonStep > 0) drawBtn('back', 110, 26, 60, 34, 'BACK', 12);
 
-if (step.type === ‘equation’) {
+if (step.type === 'equation') {
 drawEquationStep(step);
-} else if (step.type === ‘anim’) {
+} else if (step.type === 'anim') {
 drawAnimStep(step);
 }
 
 // Next / Continue
 var isLast = lessonStep === lesson.steps.length - 1;
-var btnLabel = isLast ? (playAllMode ? ‘NEXT TOPIC’ : ‘DONE’) : ‘NEXT’;
-drawBtn(‘next’, W/2, H - 52, 160, 44, btnLabel, 16, true);
+var btnLabel = isLast ? (playAllMode ? 'NEXT TOPIC' : 'DONE') : 'NEXT';
+drawBtn('next', W/2, H - 52, 160, 44, btnLabel, 16, true);
 }
 
 function drawEquationStep(step) {
 var panelY = 68;
 var panelH = H * 0.32;
-drawRect(W * 0.05, panelY, W * 0.9, panelH, ‘rgba(0,30,70,0.85)’, 14);
-drawRectStroke(W * 0.05, panelY, W * 0.9, panelH, ‘#246’, 14, 1);
+drawRect(W * 0.05, panelY, W * 0.9, panelH, 'rgba(0,30,70,0.85)', 14);
+drawRectStroke(W * 0.05, panelY, W * 0.9, panelH, '#246', 14, 1);
 
-drawText(step.heading, W/2, panelY + 28, 15, ‘#7df’, ‘center’);
+drawText(step.heading, W/2, panelY + 28, 15, '#7df', 'center');
 
 // Equation lines
-var lines = step.equation.split(’\n’);
+var lines = step.equation.split('\n');
 var eqY = panelY + 60;
 ctx.save();
 var eqGrad = ctx.createLinearGradient(W/2 - 100, 0, W/2 + 100, 0);
-eqGrad.addColorStop(0, ‘#f84’);
-eqGrad.addColorStop(0.5, ‘#ffa’);
-eqGrad.addColorStop(1, ‘#f84’);
+eqGrad.addColorStop(0, '#f84');
+eqGrad.addColorStop(0.5, '#ffa');
+eqGrad.addColorStop(1, '#f84');
 ctx.fillStyle = eqGrad;
-ctx.textAlign = ‘center’;
-ctx.textBaseline = ‘middle’;
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
 var lh = lines.length > 2 ? 28 : 36;
 var fs = lines.length > 2 ? 20 : 28;
-ctx.font = ’bold ’ + fs + ‘px “Courier New”, monospace’;
+ctx.font = 'bold ' + fs + 'px "Courier New", monospace';
 for (var i = 0; i < lines.length; i++) {
 ctx.fillText(lines[i], W/2, eqY + i * lh);
 }
@@ -553,11 +553,11 @@ ctx.restore();
 
 // Body text
 var bodyY = panelY + panelH + 20;
-var bodyLines = step.body.split(’\n’);
+var bodyLines = step.body.split('\n');
 var by = bodyY;
 for (var j = 0; j < bodyLines.length; j++) {
-if (bodyLines[j].trim() === ‘’) { by += 14; continue; }
-drawText(bodyLines[j], W/2, by, 13, ‘#bde’, ‘center’, W * 0.86);
+if (bodyLines[j].trim() === '') { by += 14; continue; }
+drawText(bodyLines[j], W/2, by, 13, '#bde', 'center', W * 0.86);
 by += 40;
 }
 }
@@ -565,30 +565,30 @@ by += 40;
 function drawAnimStep(step) {
 var panelY = 68;
 var animH = H * 0.42;
-drawRect(W * 0.03, panelY, W * 0.94, animH, ‘rgba(0,15,35,0.9)’, 14);
-drawRectStroke(W * 0.03, panelY, W * 0.94, animH, ‘#246’, 14, 1);
-drawText(step.heading, W/2, panelY + 22, 14, ‘#7df’);
+drawRect(W * 0.03, panelY, W * 0.94, animH, 'rgba(0,15,35,0.9)', 14);
+drawRectStroke(W * 0.03, panelY, W * 0.94, animH, '#246', 14, 1);
+drawText(step.heading, W/2, panelY + 22, 14, '#7df');
 
 var cx = W/2, cy = panelY + animH/2 + 10;
 var ar = animH/2 - 36;
 
 // Dispatch to animation
 var key = step.animKey;
-if (key === ‘spring’) animSpring(cx, cy, ar);
-else if (key === ‘neap’) animNeap(cx, cy, ar);
-else if (key === ‘n1_space’) animN1Space(cx, cy, ar);
-else if (key === ‘n1_skate’) animN1Skate(cx, cy, ar);
-else if (key === ‘n2_rocket’) animN2Rocket(cx, cy, ar);
-else if (key === ‘n2_balls’) animN2Balls(cx, cy, ar);
-else if (key === ‘n3_rocket’) animN3Rocket(cx, cy, ar);
-else if (key === ‘n3_astro’) animN3Astro(cx, cy, ar);
-else if (key === ‘k1_orbit’) animK1Orbit(cx, cy, ar);
-else if (key === ‘k2_sweep’) animK2Sweep(cx, cy, ar);
-else if (key === ‘k3_compare’) animK3Compare(cx, cy, ar);
+if (key === 'spring') animSpring(cx, cy, ar);
+else if (key === 'neap') animNeap(cx, cy, ar);
+else if (key === 'n1_space') animN1Space(cx, cy, ar);
+else if (key === 'n1_skate') animN1Skate(cx, cy, ar);
+else if (key === 'n2_rocket') animN2Rocket(cx, cy, ar);
+else if (key === 'n2_balls') animN2Balls(cx, cy, ar);
+else if (key === 'n3_rocket') animN3Rocket(cx, cy, ar);
+else if (key === 'n3_astro') animN3Astro(cx, cy, ar);
+else if (key === 'k1_orbit') animK1Orbit(cx, cy, ar);
+else if (key === 'k2_sweep') animK2Sweep(cx, cy, ar);
+else if (key === 'k3_compare') animK3Compare(cx, cy, ar);
 
 // Body text
 var bodyY = panelY + animH + 18;
-drawText(step.body, W/2, bodyY + 16, 12, ‘#bde’, ‘center’, W * 0.88);
+drawText(step.body, W/2, bodyY + 16, 12, '#bde', 'center', W * 0.88);
 }
 
 // – ANIMATIONS –
@@ -598,21 +598,21 @@ var t = animT * 0.3;
 var sunX = cx - ar * 0.78;
 ctx.save();
 var sg = ctx.createRadialGradient(sunX, cy, 0, sunX, cy, 22);
-sg.addColorStop(0, ‘#fff8a0’);
-sg.addColorStop(0.4, ‘#ffcc00’);
-sg.addColorStop(1, ‘rgba(255,150,0,0)’);
+sg.addColorStop(0, '#fff8a0');
+sg.addColorStop(0.4, '#ffcc00');
+sg.addColorStop(1, 'rgba(255,150,0,0)');
 ctx.fillStyle = sg;
 ctx.beginPath();
 ctx.arc(sunX, cy, 28, 0, Math.PI * 2);
 ctx.fill();
 ctx.restore();
-drawText(‘SUN’, sunX, cy + 34, 10, ‘#fc8’);
+drawText('SUN', sunX, cy + 34, 10, '#fc8');
 
 // Earth center
 var eg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 18);
-eg.addColorStop(0, ‘#4af’);
-eg.addColorStop(0.5, ‘#28f’);
-eg.addColorStop(1, ‘#048’);
+eg.addColorStop(0, '#4af');
+eg.addColorStop(0.5, '#28f');
+eg.addColorStop(1, '#048');
 ctx.fillStyle = eg;
 // Tidal bulge shape
 ctx.save();
@@ -628,19 +628,19 @@ if (a === 0) ctx.moveTo(rx, ry); else ctx.lineTo(rx, ry);
 ctx.closePath();
 ctx.fill();
 ctx.restore();
-drawText(‘EARTH’, cx, cy + 32, 10, ‘#7af’);
+drawText('EARTH', cx, cy + 32, 10, '#7af');
 
 // Moon (aligned right)
 var moonX = cx + ar * 0.62;
-ctx.fillStyle = ‘#ccc’;
+ctx.fillStyle = '#ccc';
 ctx.beginPath();
 ctx.arc(moonX, cy, 11, 0, Math.PI * 2);
 ctx.fill();
-drawText(‘MOON’, moonX, cy + 24, 10, ‘#aaa’);
+drawText('MOON', moonX, cy + 24, 10, '#aaa');
 
 // Force arrows
 ctx.save();
-ctx.strokeStyle = ‘#f84’;
+ctx.strokeStyle = '#f84';
 ctx.lineWidth = 2;
 ctx.setLineDash([4,3]);
 // Sun -> Earth
@@ -648,7 +648,7 @@ ctx.beginPath(); ctx.moveTo(sunX + 28, cy); ctx.lineTo(cx - 26, cy); ctx.stroke(
 // Moon -> Earth
 ctx.beginPath(); ctx.moveTo(moonX - 14, cy); ctx.lineTo(cx + 26, cy); ctx.stroke();
 ctx.restore();
-drawText(‘SPRING TIDE: Max Bulge’, cx, cy - ar + 22, 11, ‘#fc8’);
+drawText('SPRING TIDE: Max Bulge', cx, cy - ar + 22, 11, '#fc8');
 }
 
 function animNeap(cx, cy, ar) {
@@ -656,23 +656,23 @@ function animNeap(cx, cy, ar) {
 var sunX = cx - ar * 0.78;
 ctx.save();
 var sg = ctx.createRadialGradient(sunX, cy, 0, sunX, cy, 22);
-sg.addColorStop(0, ‘#fff8a0’);
-sg.addColorStop(0.4, ‘#ffcc00’);
-sg.addColorStop(1, ‘rgba(255,150,0,0)’);
+sg.addColorStop(0, '#fff8a0');
+sg.addColorStop(0.4, '#ffcc00');
+sg.addColorStop(1, 'rgba(255,150,0,0)');
 ctx.fillStyle = sg;
 ctx.beginPath();
 ctx.arc(sunX, cy, 28, 0, Math.PI * 2);
 ctx.fill();
 ctx.restore();
-drawText(‘SUN’, sunX, cy + 34, 10, ‘#fc8’);
+drawText('SUN', sunX, cy + 34, 10, '#fc8');
 
 // Earth (smaller bulge both axes)
 ctx.save();
 ctx.translate(cx, cy);
 var eg = ctx.createRadialGradient(0, 0, 0, 0, 0, 18);
-eg.addColorStop(0, ‘#4af’);
-eg.addColorStop(0.5, ‘#28f’);
-eg.addColorStop(1, ‘#048’);
+eg.addColorStop(0, '#4af');
+eg.addColorStop(0.5, '#28f');
+eg.addColorStop(1, '#048');
 ctx.fillStyle = eg;
 ctx.beginPath();
 for (var a = 0; a < Math.PI * 2; a += 0.05) {
@@ -683,26 +683,26 @@ if (a === 0) ctx.moveTo(rx, ry); else ctx.lineTo(rx, ry);
 ctx.closePath();
 ctx.fill();
 ctx.restore();
-drawText(‘EARTH’, cx, cy + 34, 10, ‘#7af’);
+drawText('EARTH', cx, cy + 34, 10, '#7af');
 
 // Moon on top (90 deg)
 var moonY = cy - ar * 0.55;
-ctx.fillStyle = ‘#ccc’;
+ctx.fillStyle = '#ccc';
 ctx.beginPath();
 ctx.arc(cx, moonY, 11, 0, Math.PI * 2);
 ctx.fill();
-drawText(‘MOON’, cx + 28, moonY, 10, ‘#aaa’);
+drawText('MOON', cx + 28, moonY, 10, '#aaa');
 
 // Dashed lines
 ctx.save();
-ctx.strokeStyle = ‘#48f’;
+ctx.strokeStyle = '#48f';
 ctx.lineWidth = 1.5;
 ctx.setLineDash([4,3]);
 ctx.beginPath(); ctx.moveTo(sunX + 28, cy); ctx.lineTo(cx - 22, cy); ctx.stroke();
 ctx.beginPath(); ctx.moveTo(cx, moonY + 14); ctx.lineTo(cx, cy - 22); ctx.stroke();
 ctx.setLineDash([]);
 ctx.restore();
-drawText(‘NEAP TIDE: Reduced Bulge’, cx, cy - ar + 22, 11, ‘#8af’);
+drawText('NEAP TIDE: Reduced Bulge', cx, cy - ar + 22, 11, '#8af');
 }
 
 function animN1Space(cx, cy, ar) {
@@ -712,12 +712,12 @@ if (shipX > cx + ar + 30) shipX = cx - ar - 30;
 // Spaceship
 ctx.save();
 ctx.translate(shipX, cy);
-ctx.fillStyle = ‘#8cf’;
+ctx.fillStyle = '#8cf';
 ctx.beginPath();
 ctx.moveTo(20, 0); ctx.lineTo(-14, -10); ctx.lineTo(-8, 0); ctx.lineTo(-14, 10); ctx.closePath();
 ctx.fill();
 // Engine glow
-ctx.fillStyle = ‘rgba(100,200,255,0.3)’;
+ctx.fillStyle = 'rgba(100,200,255,0.3)';
 ctx.beginPath();
 ctx.arc(-10, 0, 6, 0, Math.PI * 2);
 ctx.fill();
@@ -726,7 +726,7 @@ ctx.restore();
 ctx.save();
 for (var i = 1; i <= 5; i++) {
 ctx.globalAlpha = 0.15 * (6 - i) / 5;
-ctx.fillStyle = ‘#8cf’;
+ctx.fillStyle = '#8cf';
 ctx.beginPath();
 ctx.arc(shipX - i * 14, cy, 3, 0, Math.PI * 2);
 ctx.fill();
@@ -734,13 +734,13 @@ ctx.fill();
 ctx.restore();
 // Arrow
 ctx.save();
-ctx.strokeStyle = ‘#4f8’;
+ctx.strokeStyle = '#4f8';
 ctx.lineWidth = 2;
 ctx.beginPath();
 ctx.moveTo(shipX + 22, cy);
 ctx.lineTo(shipX + 46, cy);
 ctx.stroke();
-ctx.fillStyle = ‘#4f8’;
+ctx.fillStyle = '#4f8';
 ctx.beginPath();
 ctx.moveTo(shipX + 50, cy);
 ctx.lineTo(shipX + 40, cy - 5);
@@ -748,8 +748,8 @@ ctx.lineTo(shipX + 40, cy + 5);
 ctx.closePath();
 ctx.fill();
 ctx.restore();
-drawText(‘No force = no change’, cx, cy + ar - 20, 12, ‘#7af’);
-drawText(‘Constant velocity’, cx, cy + ar, 12, ‘#4f8’);
+drawText('No force = no change', cx, cy + ar - 20, 12, '#7af');
+drawText('Constant velocity', cx, cy + ar, 12, '#4f8');
 }
 
 function animN1Skate(cx, cy, ar) {
@@ -765,44 +765,44 @@ lean = (phase - 3) * 0.4;
 }
 // Ground
 var groundY = cy + 30;
-ctx.strokeStyle = ‘#555’;
+ctx.strokeStyle = '#555';
 ctx.lineWidth = 2;
 ctx.beginPath();
 ctx.moveTo(cx - ar, groundY); ctx.lineTo(cx + ar, groundY); ctx.stroke();
 // Curb
-ctx.fillStyle = ‘#888’;
+ctx.fillStyle = '#888';
 ctx.fillRect(cx + ar * 0.05, groundY - 8, 20, 8);
 
 // Skater (stick figure)
 ctx.save();
 ctx.translate(skaterX, groundY);
 ctx.rotate(lean);
-ctx.strokeStyle = ‘#fca’;
+ctx.strokeStyle = '#fca';
 ctx.lineWidth = 2.5;
 // Board
-ctx.fillStyle = ‘#a84’;
+ctx.fillStyle = '#a84';
 ctx.fillRect(-18, -6, 36, 5);
 // Wheels
-ctx.fillStyle = ‘#888’;
+ctx.fillStyle = '#888';
 ctx.beginPath(); ctx.arc(-12, -2, 4, 0, Math.PI*2); ctx.fill();
 ctx.beginPath(); ctx.arc(12, -2, 4, 0, Math.PI*2); ctx.fill();
 // Body
 ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(0,-30); ctx.stroke();
-ctx.beginPath(); ctx.arc(0,-36,7,0,Math.PI*2); ctx.strokeStyle=’#fca’; ctx.stroke();
+ctx.beginPath(); ctx.arc(0,-36,7,0,Math.PI*2); ctx.strokeStyle='#fca'; ctx.stroke();
 ctx.beginPath(); ctx.moveTo(0,-26); ctx.lineTo(-12,-18); ctx.stroke();
 ctx.beginPath(); ctx.moveTo(0,-26); ctx.lineTo(12,-18); ctx.stroke();
 ctx.restore();
 
 if (phase >= 3) {
-drawText(‘Inertia!’, skaterX + 20, groundY - 50, 13, ‘#f84’);
+drawText('Inertia!', skaterX + 20, groundY - 50, 13, '#f84');
 ctx.save();
-ctx.strokeStyle = ‘#f84’;
+ctx.strokeStyle = '#f84';
 ctx.lineWidth = 2;
 ctx.beginPath();
 ctx.moveTo(skaterX, groundY - 30);
 ctx.lineTo(skaterX + 30, groundY - 30);
 ctx.stroke();
-ctx.fillStyle = ‘#f84’;
+ctx.fillStyle = '#f84';
 ctx.beginPath();
 ctx.moveTo(skaterX + 34, groundY - 30);
 ctx.lineTo(skaterX + 24, groundY - 35);
@@ -821,24 +821,24 @@ if (rocketY < cy - ar * 0.5) rocketY = cy + ar * 0.5;
 // Rocket body
 ctx.save();
 ctx.translate(cx, rocketY);
-ctx.fillStyle = ‘#ccc’;
+ctx.fillStyle = '#ccc';
 ctx.beginPath();
 ctx.moveTo(0, -30); ctx.lineTo(-12, 10); ctx.lineTo(12, 10); ctx.closePath();
 ctx.fill();
-ctx.fillStyle = ‘#f42’;
+ctx.fillStyle = '#f42';
 ctx.beginPath();
 ctx.arc(0, -30, 7, 0, Math.PI * 2);
 ctx.fill();
 // Fins
-ctx.fillStyle = ‘#888’;
+ctx.fillStyle = '#888';
 ctx.beginPath(); ctx.moveTo(-12,10); ctx.lineTo(-22,24); ctx.lineTo(-12,20); ctx.closePath(); ctx.fill();
 ctx.beginPath(); ctx.moveTo(12,10); ctx.lineTo(22,24); ctx.lineTo(12,20); ctx.closePath(); ctx.fill();
 // Exhaust flame
 var flen = 20 + Math.sin(animT * 8) * 8;
 var fg = ctx.createLinearGradient(0, 12, 0, 12 + flen);
-fg.addColorStop(0, ‘#ff8c00’);
-fg.addColorStop(0.5, ‘#f42’);
-fg.addColorStop(1, ‘rgba(255,50,0,0)’);
+fg.addColorStop(0, '#ff8c00');
+fg.addColorStop(0.5, '#f42');
+fg.addColorStop(1, 'rgba(255,50,0,0)');
 ctx.fillStyle = fg;
 ctx.beginPath();
 ctx.moveTo(-7,12); ctx.lineTo(7,12); ctx.lineTo(2, 12+flen); ctx.lineTo(-2,12+flen); ctx.closePath();
@@ -846,8 +846,8 @@ ctx.fill();
 ctx.restore();
 
 // Force label
-drawText(‘F = ma’, cx + 50, rocketY, 15, ‘#ffa’);
-drawText(‘Thrust UP = Acceleration UP’, cx, cy + ar - 10, 11, ‘#8af’);
+drawText('F = ma', cx + 50, rocketY, 15, '#ffa');
+drawText('Thrust UP = Acceleration UP', cx, cy + ar - 10, 11, '#8af');
 }
 
 function animN2Balls(cx, cy, ar) {
@@ -857,7 +857,7 @@ var arrLen = 60;
 // Person (force applicator)
 ctx.save();
 ctx.translate(startX - 20, cy);
-ctx.strokeStyle = ‘#fca’;
+ctx.strokeStyle = '#fca';
 ctx.lineWidth = 2.5;
 ctx.beginPath(); ctx.arc(0,-36,7,0,Math.PI*2); ctx.stroke();
 ctx.beginPath(); ctx.moveTo(0,-29); ctx.lineTo(0,-10); ctx.stroke();
@@ -869,31 +869,31 @@ ctx.restore();
 var phase = t % 5;
 // Bowling ball (heavy, slow)
 var bx = startX + phase * 28;
-ctx.fillStyle = ‘#663’;
+ctx.fillStyle = '#663';
 ctx.beginPath();
 ctx.arc(bx, cy + 20, 18, 0, Math.PI * 2);
 ctx.fill();
-ctx.fillStyle = ‘#885’;
+ctx.fillStyle = '#885';
 ctx.beginPath();
 ctx.arc(bx - 5, cy + 14, 4, 0, Math.PI * 2);
 ctx.fill();
-drawText(‘BOWLING’, bx, cy + 48, 9, ‘#aa8’);
-drawText(’(heavy)’, bx, cy + 60, 9, ‘#888’);
+drawText('BOWLING', bx, cy + 48, 9, '#aa8');
+drawText('(heavy)', bx, cy + 60, 9, '#888');
 
 // Tennis ball (light, fast)
 var tx = startX + phase * 70;
 if (tx > cx + ar + 20) tx = cx + ar + 20;
-ctx.fillStyle = ‘#9f3’;
+ctx.fillStyle = '#9f3';
 ctx.beginPath();
 ctx.arc(tx, cy - 20, 10, 0, Math.PI * 2);
 ctx.fill();
-ctx.strokeStyle = ‘#6a2’;
+ctx.strokeStyle = '#6a2';
 ctx.lineWidth = 1.5;
 ctx.beginPath(); ctx.moveTo(tx - 6, cy - 26); ctx.quadraticCurveTo(tx, cy - 15, tx + 6, cy - 26); ctx.stroke();
-drawText(‘TENNIS’, tx, cy - 40, 9, ‘#9f3’);
-drawText(’(light)’, tx, cy - 52, 9, ‘#888’);
+drawText('TENNIS', tx, cy - 40, 9, '#9f3');
+drawText('(light)', tx, cy - 52, 9, '#888');
 
-drawText(‘Same Force, Different Mass = Different Acceleration’, cx, cy + ar - 10, 10, ‘#adf’, ‘center’, W * 0.8);
+drawText('Same Force, Different Mass = Different Acceleration', cx, cy + ar - 10, 10, '#adf', 'center', W * 0.8);
 }
 
 function animN3Rocket(cx, cy, ar) {
@@ -903,16 +903,16 @@ var offset = (t % 4) * 18;
 var ry = cy - offset * 1.5;
 ctx.save();
 ctx.translate(cx, ry);
-ctx.fillStyle = ‘#cce’;
+ctx.fillStyle = '#cce';
 ctx.beginPath();
 ctx.moveTo(0,-28); ctx.lineTo(-11,10); ctx.lineTo(11,10); ctx.closePath();
 ctx.fill();
-ctx.fillStyle = ‘#48f’;
+ctx.fillStyle = '#48f';
 ctx.beginPath(); ctx.arc(0,-28,6,0,Math.PI*2); ctx.fill();
 // Exhaust going down
 var fg = ctx.createLinearGradient(0,12,0,50);
-fg.addColorStop(0,’#f84’);
-fg.addColorStop(1,‘rgba(255,100,0,0)’);
+fg.addColorStop(0,'#f84');
+fg.addColorStop(1,'rgba(255,100,0,0)');
 ctx.fillStyle = fg;
 ctx.beginPath();
 ctx.moveTo(-6,12); ctx.lineTo(6,12); ctx.lineTo(1,50); ctx.lineTo(-1,50); ctx.closePath();
@@ -923,17 +923,17 @@ ctx.restore();
 ctx.save();
 ctx.lineWidth = 2.5;
 // Reaction = rocket up
-ctx.strokeStyle = ‘#4f8’;
+ctx.strokeStyle = '#4f8';
 ctx.beginPath(); ctx.moveTo(cx + 30, cy); ctx.lineTo(cx + 30, cy - 50); ctx.stroke();
-ctx.fillStyle = ‘#4f8’;
+ctx.fillStyle = '#4f8';
 ctx.beginPath(); ctx.moveTo(cx+30,cy-54); ctx.lineTo(cx+25,cy-44); ctx.lineTo(cx+35,cy-44); ctx.closePath(); ctx.fill();
-drawText(‘REACTION’, cx + 52, cy - 30, 10, ‘#4f8’, ‘left’);
+drawText('REACTION', cx + 52, cy - 30, 10, '#4f8', 'left');
 // Action = exhaust down
-ctx.strokeStyle = ‘#f84’;
+ctx.strokeStyle = '#f84';
 ctx.beginPath(); ctx.moveTo(cx - 30, cy); ctx.lineTo(cx - 30, cy + 50); ctx.stroke();
-ctx.fillStyle = ‘#f84’;
+ctx.fillStyle = '#f84';
 ctx.beginPath(); ctx.moveTo(cx-30,cy+54); ctx.lineTo(cx-25,cy+44); ctx.lineTo(cx-35,cy+44); ctx.closePath(); ctx.fill();
-drawText(‘ACTION’, cx - 52, cy + 30, 10, ‘#f84’, ‘right’);
+drawText('ACTION', cx - 52, cy + 30, 10, '#f84', 'right');
 ctx.restore();
 }
 
@@ -945,47 +945,47 @@ var sep = (t % 5) * 16;
 var sx = cx - 60 - sep * 0.3;
 ctx.save();
 ctx.translate(sx, cy);
-ctx.fillStyle = ‘#888’;
+ctx.fillStyle = '#888';
 ctx.fillRect(-30, -12, 60, 24);
-ctx.fillStyle = ‘#4af’;
+ctx.fillStyle = '#4af';
 ctx.fillRect(-50, -4, 20, 8);
 ctx.fillRect(30, -4, 20, 8);
-ctx.fillStyle = ‘#ffa’;
+ctx.fillStyle = '#ffa';
 ctx.fillRect(-6, -18, 12, 36);
 ctx.restore();
-drawText(‘STATION’, sx, cy + 30, 9, ‘#aaa’);
+drawText('STATION', sx, cy + 30, 9, '#aaa');
 
 // Astronaut (right)
 var ax = cx + 60 + sep;
 ctx.save();
 ctx.translate(ax, cy);
-ctx.strokeStyle = ‘#fff’;
+ctx.strokeStyle = '#fff';
 ctx.lineWidth = 2.5;
-ctx.fillStyle = ‘#eee’;
+ctx.fillStyle = '#eee';
 ctx.beginPath(); ctx.arc(0,-24,10,0,Math.PI*2); ctx.fill();
-ctx.fillStyle = ‘#ccc’;
+ctx.fillStyle = '#ccc';
 ctx.fillRect(-8,-14,16,22);
 ctx.beginPath(); ctx.moveTo(-8,-12); ctx.lineTo(-18,4); ctx.stroke();
 ctx.beginPath(); ctx.moveTo(8,-12); ctx.lineTo(18,4); ctx.stroke();
 ctx.beginPath(); ctx.moveTo(-6,8); ctx.lineTo(-8,26); ctx.stroke();
 ctx.beginPath(); ctx.moveTo(6,8); ctx.lineTo(8,26); ctx.stroke();
 ctx.restore();
-drawText(‘ASTRONAUT’, ax, cy + 34, 9, ‘#ccc’);
+drawText('ASTRONAUT', ax, cy + 34, 9, '#ccc');
 
 // Arrows
 ctx.save();
 ctx.lineWidth = 2;
-ctx.strokeStyle = ‘#f84’;
+ctx.strokeStyle = '#f84';
 ctx.beginPath(); ctx.moveTo(sx + 32, cy); ctx.lineTo(sx + 32 + 20, cy); ctx.stroke();
 // No arrow points needed for station (barely moves)
-ctx.strokeStyle = ‘#4f8’;
+ctx.strokeStyle = '#4f8';
 ctx.beginPath(); ctx.moveTo(ax - 16, cy); ctx.lineTo(ax - 40, cy); ctx.stroke();
-ctx.fillStyle = ‘#4f8’;
+ctx.fillStyle = '#4f8';
 ctx.beginPath(); ctx.moveTo(ax - 44, cy); ctx.lineTo(ax - 34, cy - 5); ctx.lineTo(ax - 34, cy + 5); ctx.closePath(); ctx.fill();
 ctx.restore();
 
 if (sep > 20) {
-drawText(‘Equal & Opposite Forces!’, cx, cy - ar + 26, 12, ‘#fc8’);
+drawText('Equal & Opposite Forces!', cx, cy - ar + 26, 12, '#fc8');
 }
 }
 
@@ -997,7 +997,7 @@ var sunX = cx - c * 0.7, sunY = cy;
 // Orbit ellipse
 ctx.save();
 ctx.translate(cx, cy);
-ctx.strokeStyle = ‘rgba(100,180,255,0.4)’;
+ctx.strokeStyle = 'rgba(100,180,255,0.4)';
 ctx.lineWidth = 1.5;
 ctx.setLineDash([4,4]);
 ctx.beginPath();
@@ -1009,17 +1009,17 @@ ctx.restore();
 // Sun
 ctx.save();
 var sg = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 20);
-sg.addColorStop(0, ‘#fff8a0’);
-sg.addColorStop(0.4, ‘#fc0’);
-sg.addColorStop(1, ‘rgba(255,150,0,0)’);
+sg.addColorStop(0, '#fff8a0');
+sg.addColorStop(0.4, '#fc0');
+sg.addColorStop(1, 'rgba(255,150,0,0)');
 ctx.fillStyle = sg;
 ctx.beginPath(); ctx.arc(sunX, sunY, 22, 0, Math.PI*2); ctx.fill();
 ctx.restore();
-drawText(‘SUN’, sunX, sunY + 28, 10, ‘#fc8’);
+drawText('SUN', sunX, sunY + 28, 10, '#fc8');
 
 // Empty focus marker
 ctx.save();
-ctx.strokeStyle = ‘rgba(100,180,255,0.4)’;
+ctx.strokeStyle = 'rgba(100,180,255,0.4)';
 ctx.lineWidth = 1;
 ctx.beginPath();
 ctx.moveTo(cx + c * 0.7 - 6, cy);
@@ -1028,24 +1028,24 @@ ctx.moveTo(cx + c * 0.7, cy - 6);
 ctx.lineTo(cx + c * 0.7, cy + 6);
 ctx.stroke();
 ctx.restore();
-drawText(‘focus’, cx + c * 0.7, cy + 16, 9, ‘rgba(100,180,255,0.5)’);
+drawText('focus', cx + c * 0.7, cy + 16, 9, 'rgba(100,180,255,0.5)');
 
 // Planet
 var angle = animT * 0.5;
 var px = cx + Math.cos(angle) * a;
 var py = cy + Math.sin(angle) * b;
-ctx.fillStyle = ‘#4af’;
+ctx.fillStyle = '#4af';
 ctx.beginPath(); ctx.arc(px, py, 9, 0, Math.PI*2); ctx.fill();
 // Line to sun
 ctx.save();
-ctx.strokeStyle = ‘rgba(100,200,255,0.25)’;
+ctx.strokeStyle = 'rgba(100,200,255,0.25)';
 ctx.lineWidth = 1;
 ctx.beginPath(); ctx.moveTo(sunX, sunY); ctx.lineTo(px, py); ctx.stroke();
 ctx.restore();
-drawText(‘PLANET’, px + 14, py - 10, 9, ‘#7af’);
+drawText('PLANET', px + 14, py - 10, 9, '#7af');
 
 // Labels
-drawText(‘ELLIPSE (not a circle!)’, cx, cy - b - 14, 11, ‘#6af’);
+drawText('ELLIPSE (not a circle!)', cx, cy - b - 14, 11, '#6af');
 }
 
 function animK2Sweep(cx, cy, ar) {
@@ -1061,7 +1061,7 @@ var t1 = animT * 0.4;
 var angle1 = -0.3;
 var angle2 = angle1 + dt * 1.8; // larger arc = faster
 ctx.save();
-ctx.fillStyle = ‘rgba(255,150,50,0.25)’;
+ctx.fillStyle = 'rgba(255,150,50,0.25)';
 ctx.beginPath();
 ctx.moveTo(sunX, cy);
 for (var aa = angle1; aa <= angle2; aa += 0.02) {
@@ -1075,7 +1075,7 @@ ctx.restore();
 var angle3 = Math.PI - 0.5;
 var angle4 = angle3 + dt * 0.7; // smaller arc = slower
 ctx.save();
-ctx.fillStyle = ‘rgba(100,150,255,0.25)’;
+ctx.fillStyle = 'rgba(100,150,255,0.25)';
 ctx.beginPath();
 ctx.moveTo(sunX, cy);
 for (var bb = angle3; bb <= angle4; bb += 0.02) {
@@ -1088,7 +1088,7 @@ ctx.restore();
 // Orbit ellipse
 ctx.save();
 ctx.translate(cx, cy);
-ctx.strokeStyle = ‘rgba(100,180,255,0.35)’;
+ctx.strokeStyle = 'rgba(100,180,255,0.35)';
 ctx.lineWidth = 1.5;
 ctx.setLineDash([4,4]);
 ctx.beginPath(); ctx.ellipse(0,0,a,b,0,0,Math.PI*2); ctx.stroke();
@@ -1098,57 +1098,57 @@ ctx.restore();
 // Sun
 ctx.save();
 var sg = ctx.createRadialGradient(sunX, cy, 0, sunX, cy, 20);
-sg.addColorStop(0,’#fff8a0’); sg.addColorStop(0.4,’#fc0’); sg.addColorStop(1,‘rgba(255,150,0,0)’);
+sg.addColorStop(0,'#fff8a0'); sg.addColorStop(0.4,'#fc0'); sg.addColorStop(1,'rgba(255,150,0,0)');
 ctx.fillStyle = sg;
 ctx.beginPath(); ctx.arc(sunX, cy, 20, 0, Math.PI*2); ctx.fill();
 ctx.restore();
 
 // Animated planet
-// Speed varies with Kepler’s 2nd: use simple approximation
+// Speed varies with Kepler's 2nd: use simple approximation
 var rawAngle = t1 % (Math.PI * 2);
 var px = cx + Math.cos(rawAngle) * a;
 var py = cy + Math.sin(rawAngle) * b;
-ctx.fillStyle = ‘#4af’;
+ctx.fillStyle = '#4af';
 ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI*2); ctx.fill();
 
-drawText(’= Equal Areas’, cx, cy + b + 20, 11, ‘#fc8’);
+drawText('= Equal Areas', cx, cy + b + 20, 11, '#fc8');
 }
 
 function animK3Compare(cx, cy, ar) {
 var sunX = cx, sunY = cy;
 ctx.save();
 var sg = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 22);
-sg.addColorStop(0,’#fff8a0’); sg.addColorStop(0.4,’#fc0’); sg.addColorStop(1,‘rgba(255,150,0,0)’);
+sg.addColorStop(0,'#fff8a0'); sg.addColorStop(0.4,'#fc0'); sg.addColorStop(1,'rgba(255,150,0,0)');
 ctx.fillStyle = sg;
 ctx.beginPath(); ctx.arc(sunX, sunY, 24, 0, Math.PI*2); ctx.fill();
 ctx.restore();
-drawText(‘SUN’, sunX, sunY + 30, 9, ‘#fc8’);
+drawText('SUN', sunX, sunY + 30, 9, '#fc8');
 
 // Inner orbit
 var r1 = ar * 0.45;
-ctx.strokeStyle = ‘rgba(100,200,255,0.25)’;
+ctx.strokeStyle = 'rgba(100,200,255,0.25)';
 ctx.lineWidth = 1.5;
 ctx.beginPath(); ctx.arc(sunX, sunY, r1, 0, Math.PI*2); ctx.stroke();
 var a1 = animT * 1.0; // fast
 var p1x = sunX + Math.cos(a1) * r1;
 var p1y = sunY + Math.sin(a1) * r1;
-ctx.fillStyle = ‘#4af’;
+ctx.fillStyle = '#4af';
 ctx.beginPath(); ctx.arc(p1x, p1y, 8, 0, Math.PI*2); ctx.fill();
-drawText(‘INNER’, p1x + 12, p1y - 12, 9, ‘#4af’);
+drawText('INNER', p1x + 12, p1y - 12, 9, '#4af');
 
 // Outer orbit
 var r2 = ar * 0.85;
-ctx.strokeStyle = ‘rgba(200,150,255,0.2)’;
+ctx.strokeStyle = 'rgba(200,150,255,0.2)';
 ctx.lineWidth = 1.5;
 ctx.beginPath(); ctx.arc(sunX, sunY, r2, 0, Math.PI*2); ctx.stroke();
-var a2 = animT * 0.35; // slow (Kepler’s 3rd)
+var a2 = animT * 0.35; // slow (Kepler's 3rd)
 var p2x = sunX + Math.cos(a2) * r2;
 var p2y = sunY + Math.sin(a2) * r2;
-ctx.fillStyle = ‘#c8f’;
+ctx.fillStyle = '#c8f';
 ctx.beginPath(); ctx.arc(p2x, p2y, 10, 0, Math.PI*2); ctx.fill();
-drawText(‘OUTER’, p2x + 14, p2y - 14, 9, ‘#c8f’);
+drawText('OUTER', p2x + 14, p2y - 14, 9, '#c8f');
 
-drawText(‘T^2 = k x a^3’, cx, cy - ar + 20, 13, ‘#ffa’);
+drawText('T^2 = k x a^3', cx, cy - ar + 20, 13, '#ffa');
 }
 
 // – QUIZ –
@@ -1156,9 +1156,9 @@ var quizPage = 0; // current question index in display (for scroll)
 function drawQuiz() {
 drawBg();
 var topY = 52;
-drawRect(0, 0, W, topY, ‘rgba(0,20,50,0.9)’, 0);
-drawText(‘QUIZ’, W/2, 26, 16, ‘#4af’);
-drawBtn(‘menu’, 36, 26, 60, 34, ‘MENU’, 12);
+drawRect(0, 0, W, topY, 'rgba(0,20,50,0.9)', 0);
+drawText('QUIZ', W/2, 26, 16, '#4af');
+drawBtn('menu', 36, 26, 60, 34, 'MENU', 12);
 
 if (submitStep > 0) {
 drawSubmitScreen();
@@ -1178,15 +1178,15 @@ return;
 // Show current question
 var qi = quizPage;
 var q = quizQuestions[qi];
-var progress = (qi + 1) + ’ / 10’;
-drawText(progress, W/2, topY + 22, 13, ‘#7af’);
+var progress = (qi + 1) + ' / 10';
+drawText(progress, W/2, topY + 22, 13, '#7af');
 
 // Question box
 var qboxY = topY + 46;
 var qboxH = 90;
-drawRect(W*0.04, qboxY, W*0.92, qboxH, ‘rgba(0,30,70,0.85)’, 12);
-drawRectStroke(W*0.04, qboxY, W*0.92, qboxH, ‘#246’, 12, 1);
-drawText(q.q, W/2, qboxY + qboxH/2, 13, ‘#dff’, ‘center’, W * 0.84);
+drawRect(W*0.04, qboxY, W*0.92, qboxH, 'rgba(0,30,70,0.85)', 12);
+drawRectStroke(W*0.04, qboxY, W*0.92, qboxH, '#246', 12, 1);
+drawText(q.q, W/2, qboxY + qboxH/2, 13, '#dff', 'center', W * 0.84);
 
 // Choices
 var choiceY = qboxY + qboxH + 16;
@@ -1195,47 +1195,47 @@ var choiceW = W * 0.88;
 for (var i = 0; i < q.choices.length; i++) {
 var cy2 = choiceY + i * (choiceH + 10);
 var selected = quizAnswers[qi] === i;
-var bg = selected ? ‘rgba(20,80,160,0.9)’ : ‘rgba(5,25,55,0.85)’;
-var border = selected ? ‘#6cf’ : ‘#246’;
+var bg = selected ? 'rgba(20,80,160,0.9)' : 'rgba(5,25,55,0.85)';
+var border = selected ? '#6cf' : '#246';
 drawRect(W*0.06, cy2, choiceW, choiceH, bg, 10);
 drawRectStroke(W*0.06, cy2, choiceW, choiceH, border, 10, selected ? 2 : 1);
-drawText(q.choices[i], W/2, cy2 + choiceH/2, 13, selected ? ‘#fff’ : ‘#bde’, ‘center’, choiceW - 20);
-regBtn(‘choice_’ + i, W*0.06, cy2, choiceW, choiceH);
+drawText(q.choices[i], W/2, cy2 + choiceH/2, 13, selected ? '#fff' : '#bde', 'center', choiceW - 20);
+regBtn('choice_' + i, W*0.06, cy2, choiceW, choiceH);
 }
 
 // Prev/Next
 var navY = choiceY + 4 * (choiceH + 10) + 16;
-if (qi > 0) drawBtn(‘qprev’, W/2 - 90, navY, 120, 42, ‘PREV’, 14);
+if (qi > 0) drawBtn('qprev', W/2 - 90, navY, 120, 42, 'PREV', 14);
 if (qi < 9) {
-drawBtn(‘qnext’, W/2 + 90, navY, 120, 42, ‘NEXT’, 14, true);
+drawBtn('qnext', W/2 + 90, navY, 120, 42, 'NEXT', 14, true);
 } else {
-drawBtn(‘qcheck’, W/2, navY, 180, 42, ‘CHECK ANSWERS’, 14, true);
+drawBtn('qcheck', W/2, navY, 180, 42, 'CHECK ANSWERS', 14, true);
 }
 }
 
 function drawQuizResults() {
 drawBg();
 var topY = 52;
-drawRect(0, 0, W, topY, ‘rgba(0,20,50,0.9)’, 0);
-drawText(‘RESULTS’, W/2, 26, 16, ‘#4af’);
-drawBtn(‘menu’, 36, 26, 60, 34, ‘MENU’, 12);
+drawRect(0, 0, W, topY, 'rgba(0,20,50,0.9)', 0);
+drawText('RESULTS', W/2, 26, 16, '#4af');
+drawBtn('menu', 36, 26, 60, 34, 'MENU', 12);
 
-var scoreColor = quizScore >= 8 ? ‘#4f8’ : quizScore >= 6 ? ‘#ffa’ : ‘#f64’;
-drawText(quizScore + ’ / 10’, W/2, H * 0.32, 52, scoreColor);
-var msg = quizScore === 10 ? ‘PERFECT!’ : quizScore >= 8 ? ‘Excellent!’ : quizScore >= 6 ? ‘Good job!’ : quizScore >= 4 ? ‘Keep studying!’ : ‘Review the lessons!’;
-drawText(msg, W/2, H * 0.32 + 60, 20, ‘#dff’);
+var scoreColor = quizScore >= 8 ? '#4f8' : quizScore >= 6 ? '#ffa' : '#f64';
+drawText(quizScore + ' / 10', W/2, H * 0.32, 52, scoreColor);
+var msg = quizScore === 10 ? 'PERFECT!' : quizScore >= 8 ? 'Excellent!' : quizScore >= 6 ? 'Good job!' : quizScore >= 4 ? 'Keep studying!' : 'Review the lessons!';
+drawText(msg, W/2, H * 0.32 + 60, 20, '#dff');
 
-drawBtn(‘review’, W/2, H * 0.60, W * 0.7, 48, ‘REVIEW WRONG ANSWERS’, 14);
-drawBtn(‘retry’, W/2, H * 0.60 + 66, W * 0.7, 48, ‘TRY AGAIN’, 14);
-drawBtn(‘submit’, W/2, H * 0.60 + 132, W * 0.7, 48, ‘SUBMIT SCORE’, 16, true);
+drawBtn('review', W/2, H * 0.60, W * 0.7, 48, 'REVIEW WRONG ANSWERS', 14);
+drawBtn('retry', W/2, H * 0.60 + 66, W * 0.7, 48, 'TRY AGAIN', 14);
+drawBtn('submit', W/2, H * 0.60 + 132, W * 0.7, 48, 'SUBMIT SCORE', 16, true);
 }
 
 function drawReview() {
 drawBg();
 var topY = 52;
-drawRect(0, 0, W, topY, ‘rgba(0,20,50,0.9)’, 0);
-drawText(‘REVIEW’, W/2, 26, 16, ‘#4af’);
-drawBtn(‘back_results’, 36, 26, 60, 34, ‘BACK’, 12);
+drawRect(0, 0, W, topY, 'rgba(0,20,50,0.9)', 0);
+drawText('REVIEW', W/2, 26, 16, '#4af');
+drawBtn('back_results', 36, 26, 60, 34, 'BACK', 12);
 
 var scrollY = topY + 14 - reviewScroll;
 for (var i = 0; i < quizQuestions.length; i++) {
@@ -1264,7 +1264,7 @@ for (var j = 0; j < quizQuestions.length; j++) {
 if (quizAnswers[j] !== quizQuestions[j].correct) { allCorrect = false; break; }
 }
 if (allCorrect) {
-drawText(‘You got them all right!’, W/2, topY + 60, 16, ‘#4f8’);
+drawText('You got them all right!', W/2, topY + 60, 16, '#4f8');
 }
 }
 
@@ -1273,31 +1273,31 @@ var reviewScroll = 0;
 function drawSubmitScreen() {
 if (submitStep === 1) {
 // Name entry
-drawText(‘Enter Your Name’, W/2, H * 0.30, 20, ‘#4af’);
-drawText(‘Type in the field below’, W/2, H * 0.30 + 36, 13, ‘#7af’);
-nameInput.style.visibility = ‘visible’; nameInput.style.pointerEvents = ‘auto’;
+drawText('Enter Your Name', W/2, H * 0.30, 20, '#4af');
+drawText('Type in the field below', W/2, H * 0.30 + 36, 13, '#7af');
+nameInput.style.visibility = 'visible'; nameInput.style.pointerEvents = 'auto';
 
-drawText(‘Then tap CONTINUE’, W/2, H * 0.60, 14, ‘#7af’);
-drawBtn(‘name_continue’, W/2, H * 0.72, 180, 48, ‘CONTINUE’, 16, true);
+drawText('Then tap CONTINUE', W/2, H * 0.60, 14, '#7af');
+drawBtn('name_continue', W/2, H * 0.72, 180, 48, 'CONTINUE', 16, true);
 
 } else if (submitStep === 2) {
 // Period select
-nameInput.style.visibility = ‘hidden’; nameInput.style.pointerEvents = ‘none’;
-drawText(‘Select Your Period’, W/2, H * 0.28, 20, ‘#4af’);
-var periods = [‘1’,‘2’,‘3’,‘4’,‘5’,‘6’,‘7’];
+nameInput.style.visibility = 'hidden'; nameInput.style.pointerEvents = 'none';
+drawText('Select Your Period', W/2, H * 0.28, 20, '#4af');
+var periods = ['1','2','3','4','5','6','7'];
 var bw = 60, bh = 60, gap = 14;
 var total = periods.length * bw + (periods.length - 1) * gap;
 var startX = W/2 - total/2;
 for (var i = 0; i < periods.length; i++) {
 var px2 = startX + i * (bw + gap) + bw/2;
 var sel = selectedPeriod === i + 1;
-drawRect(px2 - bw/2, H * 0.42, bw, bh, sel ? ‘rgba(30,100,200,0.9)’ : ‘rgba(10,30,70,0.85)’, 10);
-drawRectStroke(px2 - bw/2, H * 0.42, bw, bh, sel ? ‘#6cf’ : ‘#246’, 10, sel ? 2 : 1);
-drawText(periods[i], px2, H * 0.42 + bh/2, 22, sel ? ‘#fff’ : ‘#8af’);
-regBtn(‘period_’ + (i+1), px2 - bw/2, H * 0.42, bw, bh);
+drawRect(px2 - bw/2, H * 0.42, bw, bh, sel ? 'rgba(30,100,200,0.9)' : 'rgba(10,30,70,0.85)', 10);
+drawRectStroke(px2 - bw/2, H * 0.42, bw, bh, sel ? '#6cf' : '#246', 10, sel ? 2 : 1);
+drawText(periods[i], px2, H * 0.42 + bh/2, 22, sel ? '#fff' : '#8af');
+regBtn('period_' + (i+1), px2 - bw/2, H * 0.42, bw, bh);
 }
 if (selectedPeriod > 0) {
-drawBtn(‘period_continue’, W/2, H * 0.68, 180, 48, ‘CONTINUE’, 16, true);
+drawBtn('period_continue', W/2, H * 0.68, 180, 48, 'CONTINUE', 16, true);
 }
 }
 }
@@ -1305,30 +1305,30 @@ drawBtn(‘period_continue’, W/2, H * 0.68, 180, 48, ‘CONTINUE’, 16, true)
 function drawFinalScreen() {
 drawBg();
 var topY = 52;
-drawRect(0, 0, W, topY, ‘rgba(0,20,50,0.9)’, 0);
-drawText(‘SUBMITTED’, W/2, 26, 16, ‘#4af’);
+drawRect(0, 0, W, topY, 'rgba(0,20,50,0.9)', 0);
+drawText('SUBMITTED', W/2, 26, 16, '#4af');
 
 // Star decorations
 ctx.save();
-ctx.fillStyle = ‘#fc8’;
+ctx.fillStyle = '#fc8';
 for (var i = 0; i < 5; i++) {
 drawStar5(W/2 - 80 + i * 40, H * 0.22, quizScore >= (i * 2 + 2) ? 14 : 10, quizScore >= (i * 2 + 2));
 }
 ctx.restore();
 
-drawText(studentName, W/2, H * 0.35, 26, ‘#fff’);
-drawText(’Period ’ + studentPeriod, W/2, H * 0.35 + 42, 18, ‘#7af’);
+drawText(studentName, W/2, H * 0.35, 26, '#fff');
+drawText('Period ' + studentPeriod, W/2, H * 0.35 + 42, 18, '#7af');
 
-var scoreColor = quizScore >= 8 ? ‘#4f8’ : quizScore >= 6 ? ‘#ffa’ : ‘#f64’;
-drawText(quizScore + ’ / 10’, W/2, H * 0.55, 52, scoreColor);
-drawText(‘Quiz Score’, W/2, H * 0.55 + 52, 14, ‘#7af’);
+var scoreColor = quizScore >= 8 ? '#4f8' : quizScore >= 6 ? '#ffa' : '#f64';
+drawText(quizScore + ' / 10', W/2, H * 0.55, 52, scoreColor);
+drawText('Quiz Score', W/2, H * 0.55 + 52, 14, '#7af');
 
-drawRect(W*0.06, H*0.72, W*0.88, 70, ‘rgba(0,30,70,0.85)’, 12);
-drawRectStroke(W*0.06, H*0.72, W*0.88, 70, ‘#246’, 12, 1);
-drawText(‘Take a screenshot and’, W/2, H*0.72 + 24, 13, ‘#adf’);
-drawText(‘submit it in Canvas!’, W/2, H*0.72 + 48, 13, ‘#adf’);
+drawRect(W*0.06, H*0.72, W*0.88, 70, 'rgba(0,30,70,0.85)', 12);
+drawRectStroke(W*0.06, H*0.72, W*0.88, 70, '#246', 12, 1);
+drawText('Take a screenshot and', W/2, H*0.72 + 24, 13, '#adf');
+drawText('submit it in Canvas!', W/2, H*0.72 + 48, 13, '#adf');
 
-drawBtn(‘menu_final’, W/2, H - 52, 160, 44, ‘MAIN MENU’, 14, true);
+drawBtn('menu_final', W/2, H - 52, 160, 44, 'MAIN MENU', 14, true);
 }
 
 function drawStar5(x, y, r, filled) {
@@ -1342,10 +1342,10 @@ if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
 }
 ctx.closePath();
 if (filled) {
-ctx.fillStyle = ‘#fc8’;
+ctx.fillStyle = '#fc8';
 ctx.fill();
 } else {
-ctx.strokeStyle = ‘#666’;
+ctx.strokeStyle = '#666';
 ctx.lineWidth = 1;
 ctx.stroke();
 }
@@ -1353,7 +1353,7 @@ ctx.stroke();
 
 // – TOUCH HANDLING –
 var touchStartY = 0;
-canvas.addEventListener(‘touchstart’, function(e) {
+canvas.addEventListener('touchstart', function(e) {
 e.preventDefault();
 var touch = e.changedTouches[0];
 var tx = touch.clientX, ty = touch.clientY;
@@ -1361,9 +1361,9 @@ touchStartY = ty;
 handleTap(tx, ty);
 }, { passive: false });
 
-canvas.addEventListener(‘touchmove’, function(e) {
+canvas.addEventListener('touchmove', function(e) {
 e.preventDefault();
-if (state === ‘quiz’ && reviewMode) {
+if (state === 'quiz' && reviewMode) {
 var dy = e.changedTouches[0].clientY - touchStartY;
 reviewScroll -= dy * 0.5;
 reviewScroll = Math.max(0, reviewScroll);
@@ -1371,12 +1371,12 @@ touchStartY = e.changedTouches[0].clientY;
 }
 }, { passive: false });
 
-canvas.addEventListener(‘click’, function(e) {
+canvas.addEventListener('click', function(e) {
 handleTap(e.clientX, e.clientY);
 });
 
-nameInput.addEventListener(‘touchstart’, function(e) { e.stopPropagation(); });
-nameInput.addEventListener(‘click’, function(e) { e.stopPropagation(); });
+nameInput.addEventListener('touchstart', function(e) { e.stopPropagation(); });
+nameInput.addEventListener('click', function(e) { e.stopPropagation(); });
 
 function handleTap(tx, ty) {
 for (var i = 0; i < buttons.length; i++) {
@@ -1389,47 +1389,47 @@ return;
 }
 
 function handleBtnTap(id, tx, ty) {
-if (id === ‘menu’ || id === ‘menu_final’) {
-state = ‘menu’;
+if (id === 'menu' || id === 'menu_final') {
+state = 'menu';
 playAllMode = false;
-nameInput.style.visibility = ‘hidden’; nameInput.style.pointerEvents = ‘none’;
+nameInput.style.visibility = 'hidden'; nameInput.style.pointerEvents = 'none';
 submitStep = 0;
 reviewMode = false;
 return;
 }
 
-if (state === ‘menu’) {
-if (id === ‘menu_playall’) {
+if (state === 'menu') {
+if (id === 'menu_playall') {
 playAllMode = true;
 playAllIndex = 0;
 currentLesson = getLessonById(playAllLessons[0]);
 lessonStep = 0;
 animT = 0;
-state = ‘lesson’;
-} else if (id === ‘menu_quiz’) {
+state = 'lesson';
+} else if (id === 'menu_quiz') {
 buildQuiz();
 quizPage = 0;
-state = ‘quiz’;
+state = 'quiz';
 } else {
-var lid = id.replace(‘menu_’, ‘’);
+var lid = id.replace('menu_', '');
 var lesson = getLessonById(lid);
 if (lesson) {
 currentLesson = lesson;
 lessonStep = 0;
 animT = 0;
 playAllMode = false;
-state = ‘lesson’;
+state = 'lesson';
 }
 }
 return;
 }
 
-if (state === ‘lesson’) {
-if (id === ‘back’) {
+if (state === 'lesson') {
+if (id === 'back') {
 if (lessonStep > 0) { lessonStep--; animT = 0; }
 return;
 }
-if (id === ‘next’) {
+if (id === 'next') {
 if (lessonStep < currentLesson.steps.length - 1) {
 lessonStep++;
 animT = 0;
@@ -1445,11 +1445,11 @@ animT = 0;
 // All done, go to quiz prompt
 buildQuiz();
 quizPage = 0;
-state = ‘quiz’;
+state = 'quiz';
 playAllMode = false;
 }
 } else {
-state = ‘menu’;
+state = 'menu';
 }
 }
 return;
@@ -1457,11 +1457,11 @@ return;
 return;
 }
 
-if (state === ‘quiz’) {
-if (id === ‘back_results’) { reviewMode = false; return; }
-if (id === ‘review’) { reviewMode = true; reviewScroll = 0; return; }
-if (id === ‘retry’) { buildQuiz(); quizPage = 0; return; }
-if (id === ‘submit’) { submitStep = 1; return; }
+if (state === 'quiz') {
+if (id === 'back_results') { reviewMode = false; return; }
+if (id === 'review') { reviewMode = true; reviewScroll = 0; return; }
+if (id === 'retry') { buildQuiz(); quizPage = 0; return; }
+if (id === 'submit') { submitStep = 1; return; }
 
 if (submitStep === 1) {
   if (id === 'name_continue') {
@@ -1516,34 +1516,34 @@ animT += 0.016;
 clearBtns();
 ctx.clearRect(0, 0, W, H);
 try {
-if (state === ‘menu’) {
+if (state === 'menu') {
 drawMenu();
-} else if (state === ‘lesson’) {
+} else if (state === 'lesson') {
 drawLessonStep();
-} else if (state === ‘quiz’) {
+} else if (state === 'quiz') {
 drawQuiz();
-} else if (state === ‘final’) {
+} else if (state === 'final') {
 drawFinalScreen();
 }
 } catch(e) {
-ctx.fillStyle = ‘#111’;
+ctx.fillStyle = '#111';
 ctx.fillRect(0, 0, W, H);
-ctx.fillStyle = ‘#f44’;
-ctx.font = ‘14px monospace’;
-ctx.textAlign = ‘left’;
-ctx.textBaseline = ‘top’;
-var msg = ‘ERR: ’ + String(e);
-var words = msg.split(’ ’);
-var line = ‘’, ey = 60;
+ctx.fillStyle = '#f44';
+ctx.font = '14px monospace';
+ctx.textAlign = 'left';
+ctx.textBaseline = 'top';
+var msg = 'ERR: ' + String(e);
+var words = msg.split(' ');
+var line = '', ey = 60;
 for (var wi = 0; wi < words.length; wi++) {
-var test = line + words[wi] + ’ ’;
-if (test.length > 38) { ctx.fillText(line, 20, ey); ey += 22; line = words[wi] + ’ ‘; }
+var test = line + words[wi] + ' ';
+if (test.length > 38) { ctx.fillText(line, 20, ey); ey += 22; line = words[wi] + ' '; }
 else { line = test; }
 }
 ctx.fillText(line, 20, ey);
-ctx.fillStyle = ‘#fa4’;
-ctx.fillText(‘state:’ + state, 20, ey + 30);
-if (currentLesson) { ctx.fillText(‘lesson:’ + currentLesson.id + ’ s:’ + lessonStep, 20, ey + 52); }
+ctx.fillStyle = '#fa4';
+ctx.fillText('state:' + state, 20, ey + 30);
+if (currentLesson) { ctx.fillText('lesson:' + currentLesson.id + ' s:' + lessonStep, 20, ey + 52); }
 }
 }
 
