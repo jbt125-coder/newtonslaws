@@ -1512,7 +1512,14 @@ state = 'quiz';
 playAllMode = false;
 }
 } else {
+// End of lesson
+if (quizReturnMode) {
+state = 'quiz';
+quizReturnMode = false;
+quizTopicPicker = false;
+} else {
 state = 'menu';
+}
 }
 }
 return;
@@ -1525,6 +1532,21 @@ if (id === 'back_results') { reviewMode = false; return; }
 if (id === 'review') { reviewMode = true; reviewScroll = 0; return; }
 if (id === 'retry') { buildQuiz(); quizPage = 0; return; }
 if (id === 'submit') { submitStep = 1; return; }
+if (id === 'quiz_review_topic') { quizTopicPicker = true; return; }
+if (id === 'quiz_topic_cancel') { quizTopicPicker = false; return; }
+if (id.indexOf('qtopic_') === 0) {
+var topicId = id.replace('qtopic_', '');
+var topicLesson = getLessonById(topicId);
+if (topicLesson) {
+quizReturnMode = true;
+quizTopicPicker = false;
+currentLesson = topicLesson;
+lessonStep = 0;
+animT = 0;
+state = 'lesson';
+}
+return;
+}
 
 if (submitStep === 1) {
   if (id === 'name_continue') {
