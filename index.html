@@ -66,6 +66,8 @@ var studentPeriod = 0;
 var submitStep = 0; // 0=name, 1=period, 2=done
 var selectedPeriod = 0;
 var reviewMode = false;
+var quizReturnMode = false;
+var quizTopicPicker = false;
 
 function resize() {
 W = document.documentElement.clientWidth || window.innerWidth || screen.width || 390;
@@ -520,7 +522,7 @@ drawAnimStep(step);
 
 // Next / Continue
 var isLast = lessonStep === lesson.steps.length - 1;
-var btnLabel = isLast ? (playAllMode ? 'NEXT TOPIC' : 'DONE') : 'NEXT';
+var btnLabel = isLast ? (playAllMode ? 'NEXT TOPIC' : (quizReturnMode ? 'BACK TO QUIZ' : 'DONE')) : 'NEXT';
 drawBtn('next', W/2, H - 52, 160, 44, btnLabel, 16, true);
 }
 
@@ -755,13 +757,15 @@ drawText('Constant velocity', cx, cy + ar, 12, '#4f8');
 function animN1Skate(cx, cy, ar) {
 var t = animT * 0.6;
 var phase = t % 6;
+var curbX = cx + ar * 0.05;
+var skaterStart = cx - ar * 0.6;
 var skaterX, lean;
 if (phase < 3) {
-skaterX = cx - ar * 0.5 + phase * 60;
+skaterX = skaterStart + (phase / 3) * (curbX - skaterStart - 20);
 lean = 0;
 } else {
-skaterX = cx + ar * 0.1;
-lean = (phase - 3) * 0.4;
+skaterX = curbX - 20;
+lean = Math.min((phase - 3) * 0.4, 1.2);
 }
 // Ground
 var groundY = cy + 30;
@@ -1053,15 +1057,11 @@ var a = ar * 0.8, b = ar * 0.5;
 var c = Math.sqrt(a * a - b * b);
 var sunX = cx - c * 0.7;
 
-// Draw two swept areas
-var dt = 0.4; // time interval
-var t1 = animT * 0.4;
-
-// Near perihelion (fast section) - near sun side
-var angle1 = -0.3;
-var angle2 = angle1 + dt * 1.8; // larger arc = faster
+// Near perihelion (FAST - left side, near sun) - wider swept area
+var angle1 = Math.PI - 0.55;
+var angle2 = Math.PI + 0.55;
 ctx.save();
-ctx.fillStyle = 'rgba(255,150,50,0.25)';
+ctx.fillStyle = 'rgba(255,150,50,0.35)';
 ctx.beginPath();
 ctx.moveTo(sunX, cy);
 for (var aa = angle1; aa <= angle2; aa += 0.02) {
@@ -1071,11 +1071,11 @@ ctx.closePath();
 ctx.fill();
 ctx.restore();
 
-// Near aphelion (slow section) - far side
-var angle3 = Math.PI - 0.5;
-var angle4 = angle3 + dt * 0.7; // smaller arc = slower
+// Near aphelion (SLOW - right side, far from sun) - narrower swept area
+var angle3 = -0.22;
+var angle4 = 0.22;
 ctx.save();
-ctx.fillStyle = 'rgba(100,150,255,0.25)';
+ctx.fillStyle = 'rgba(100,150,255,0.35)';
 ctx.beginPath();
 ctx.moveTo(sunX, cy);
 for (var bb = angle3; bb <= angle4; bb += 0.02) {
@@ -1103,14 +1103,33 @@ ctx.fillStyle = sg;
 ctx.beginPath(); ctx.arc(sunX, cy, 20, 0, Math.PI*2); ctx.fill();
 ctx.restore();
 
-// Animated planet
-// Speed varies with Kepler's 2nd: use simple approximation
-var rawAngle = t1 % (Math.PI * 2);
-var px = cx + Math.cos(rawAngle) * a;
-var py = cy + Math.sin(rawAngle) * b;
-ctx.fillStyle = '#4af';
-ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI*2); ctx.fill();
+// Animated planet with variable speed (Kepler's 2nd law)
+var t1 = animT * 0.4;
+var ecc = 0.55;
+var M = t1 % (Math.PI * 2);
+var E = M;
+E = E - (E - ecc * Math.sin(E) - M) / (1 - ecc * Math.cos(E));
+E = E - (E - ecc * Math.sin(E) - M) / (1 - ecc * Math.cos(E));
+var nu = 2 * Math.atan2(Math.sqrt(1 + ecc) * Math.sin(E / 2), Math.sqrt(1 - ecc) * Math.cos(E / 2));
+var planetAngle = nu + Math.PI;
+var px = cx + Math.cos(planetAngle) * a;
+var py = cy + Math.sin(planetAngle) * b;
 
+// Speed indicator: planet size pulses faster near sun
+var distToSun = Math.sqrt((px - sunX)*(px - sunX) + (py - cy)*(py - cy));
+var maxDist = a + Math.abs(sunX - cx);
+var speedNorm = 1 - distToSun / maxDist;
+var planetR = 7 + speedNorm * 5;
+
+ctx.fillStyle = '#4af';
+ctx.beginPath(); ctx.arc(px, py, planetR, 0, Math.PI*2); ctx.fill();
+ctx.strokeStyle = 'rgba(100,200,255,0.5)';
+ctx.lineWidth = 1;
+ctx.beginPath(); ctx.moveTo(sunX, cy); ctx.lineTo(px, py); ctx.stroke();
+
+// FAST / SLOW labels on the swept areas
+drawText('FAST', sunX - 18, cy, 11, '#fc8');
+drawText('SLOW', cx + a * 0.82, cy, 11, '#8af');
 drawText('= Equal Areas', cx, cy + b + 20, 11, '#fc8');
 }
 
@@ -1170,6 +1189,11 @@ drawReview();
 return;
 }
 
+if (quizTopicPicker) {
+drawQuizTopicPicker();
+return;
+}
+
 if (quizChecked) {
 drawQuizResults();
 return;
@@ -1210,6 +1234,37 @@ if (qi < 9) {
 drawBtn('qnext', W/2 + 90, navY, 120, 42, 'NEXT', 14, true);
 } else {
 drawBtn('qcheck', W/2, navY, 180, 42, 'CHECK ANSWERS', 14, true);
+}
+drawBtn('quiz_review_topic', W/2, navY + 58, W * 0.72, 38, 'REVIEW A TOPIC', 12);
+}
+
+function drawQuizTopicPicker() {
+drawBg();
+var topY = 52;
+drawRect(0, 0, W, topY, 'rgba(0,20,50,0.9)', 0);
+drawText('REVIEW A TOPIC', W/2, 26, 15, '#4af');
+drawBtn('quiz_topic_cancel', W - 56, 26, 80, 34, 'CANCEL', 12);
+
+drawText('Pick a topic to review, then come back', W/2, topY + 26, 11, '#7af');
+
+var items = [
+{ id: 'gravity', label: 'Universal Gravitation', color: '#1a3a5a' },
+{ id: 'n1', label: "Newton's 1st Law", color: '#1a3a2a' },
+{ id: 'n2', label: "Newton's 2nd Law", color: '#1a3a2a' },
+{ id: 'n3', label: "Newton's 3rd Law", color: '#1a3a2a' },
+{ id: 'k1', label: "Kepler's 1st Law", color: '#3a1a3a' },
+{ id: 'k2', label: "Kepler's 2nd Law", color: '#3a1a3a' },
+{ id: 'k3', label: "Kepler's 3rd Law", color: '#3a1a3a' }
+];
+var startY = topY + 52;
+var bh = 48, gap = 8, bw = W * 0.84;
+for (var i = 0; i < items.length; i++) {
+var item = items[i];
+var y = startY + i * (bh + gap);
+drawRect(W/2 - bw/2, y, bw, bh, item.color, 10, 0.9);
+drawRectStroke(W/2 - bw/2, y, bw, bh, '#38a', 10, 1);
+drawText(item.label, W/2, y + bh/2, 14, '#cef');
+regBtn('qtopic_' + item.id, W/2 - bw/2, y, bw, bh);
 }
 }
 
@@ -1273,19 +1328,21 @@ var reviewScroll = 0;
 function drawSubmitScreen() {
 if (submitStep === 1) {
 // Name entry
-drawText('Enter Your Name', W/2, H * 0.30, 20, '#4af');
-drawText('Type in the field below', W/2, H * 0.30 + 36, 13, '#7af');
+drawText('Enter Your Name', W/2, H * 0.22, 20, '#4af');
+drawText('Type in the field below', W/2, H * 0.30, 13, '#7af');
 nameInput.style.visibility = 'visible'; nameInput.style.pointerEvents = 'auto';
+nameInput.style.bottom = Math.round(H * 0.32) + 'px';
 
-drawText('Then tap CONTINUE', W/2, H * 0.60, 14, '#7af');
-drawBtn('name_continue', W/2, H * 0.72, 180, 48, 'CONTINUE', 16, true);
+drawBtn('name_continue', W/2, H * 0.78, 180, 48, 'CONTINUE', 16, true);
 
 } else if (submitStep === 2) {
 // Period select
 nameInput.style.visibility = 'hidden'; nameInput.style.pointerEvents = 'none';
 drawText('Select Your Period', W/2, H * 0.28, 20, '#4af');
 var periods = ['1','2','3','4','5','6','7'];
-var bw = 60, bh = 60, gap = 14;
+var gap = 8;
+var bw = Math.min(52, Math.floor((W * 0.92 - gap * 6) / 7));
+var bh = bw;
 var total = periods.length * bw + (periods.length - 1) * gap;
 var startX = W/2 - total/2;
 for (var i = 0; i < periods.length; i++) {
@@ -1390,6 +1447,12 @@ return;
 
 function handleBtnTap(id, tx, ty) {
 if (id === 'menu' || id === 'menu_final') {
+if (quizReturnMode) {
+state = 'quiz';
+quizReturnMode = false;
+quizTopicPicker = false;
+return;
+}
 state = 'menu';
 playAllMode = false;
 nameInput.style.visibility = 'hidden'; nameInput.style.pointerEvents = 'none';
